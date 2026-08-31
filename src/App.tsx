@@ -168,7 +168,7 @@ function MainAppContent() {
           {activeTab === 'handbook' && (
             <HandbookView onStartLesson={handleStartLesson} />
           )}
-          {activeTab === 'profile' && <ProfileView />}
+          {activeTab === 'profile' && <ProfileView onStartLesson={handleStartLesson} />}
           {activeTab === 'admin' && <AdminView />}
         </div>
       </main>

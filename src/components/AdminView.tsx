@@ -174,8 +174,8 @@ export const AdminView: React.FC = () => {
                     </td>
 
                     <td className="p-3.5 border-r border-zinc-200 text-zinc-800">
-                      <div>{u.completedLessonsCount || 0} / 5 модулей</div>
-                      <div className="text-[10px] text-zinc-400">стрик: {u.streakDays || 1} дн.</div>
+                      <div className="font-bold">{u.completedLessonsCount || 0} / 23 модулей</div>
+                      <div className="text-[10px] text-zinc-400">стрик: {u.streakDays || 0} дн.</div>
                     </td>
 
                     <td className="p-3.5 border-r border-zinc-200">

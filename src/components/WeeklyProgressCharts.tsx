@@ -14,6 +14,7 @@ import {
   Legend,
 } from 'recharts';
 import { UserProfile, LessonProgress } from '../types';
+import { calculateRealAnalytics, RealAnalyticsSummary } from '../utils/analytics';
 
 interface WeeklyProgressChartsProps {
   profile: UserProfile | null;
@@ -22,68 +23,28 @@ interface WeeklyProgressChartsProps {
 
 type ChartMetric = 'accuracy' | 'volume' | 'time';
 
-interface WeekDataPoint {
-  weekLabel: string;
-  weekShort: string;
-  accuracy: number;
-  exercises: number;
-  newWords: number;
-  studyMinutes: number;
-  passThreshold: number;
-}
-
 export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
   profile,
   progress,
 }) => {
   const [activeMetric, setActiveMetric] = useState<ChartMetric>('accuracy');
 
-  const progressList = Object.values(progress) as LessonProgress[];
-  const completedCount = progressList.filter((p) => p.passed).length;
-  const totalAttempts = profile?.totalAttempts || progressList.reduce((a, b) => a + (b.attemptsCount || 1), 0);
-  const scores = progressList.map((p) => p.scorePercent || 0);
-  const currentAvgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 82;
+  const analytics: RealAnalyticsSummary = useMemo(() => {
+    return calculateRealAnalytics(profile, progress);
+  }, [profile, progress]);
 
-  // Generate 8 weeks of progressive learning data
-  const weeklyData: WeekDataPoint[] = useMemo(() => {
-    // Generate dates for the past 8 weeks
-    const weeks: WeekDataPoint[] = [];
-    const now = new Date();
+  const {
+    weeklyData,
+    totalWordsLearned,
+    totalStudyHours,
+    accuracyGrowth,
+    totalQuestionsSolved,
+    competences,
+    hasAnyAttempt,
+    avgScore,
+  } = analytics;
 
-    const baseAccuracies = [58, 64, 69, 74, 78, 83, 86, currentAvgScore];
-    const baseExercises = [12, 24, 35, 42, 50, 68, 75, Math.max(80, totalAttempts * 12)];
-    const baseWords = [35, 60, 95, 130, 175, 230, 290, 340 + completedCount * 45];
-    const baseMinutes = [90, 140, 180, 210, 240, 310, 330, 360 + (profile?.streakDays || 1) * 25];
-
-    for (let i = 7; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(now.getDate() - i * 7);
-      const weekIndex = 7 - i;
-      const weekNum = weekIndex + 1;
-      
-      const dateRangeStr = `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`;
-
-      weeks.push({
-        weekLabel: `Неделя ${weekNum} (${dateRangeStr})`,
-        weekShort: `Нед. ${weekNum}`,
-        accuracy: Math.min(100, Math.max(40, baseAccuracies[weekIndex])),
-        exercises: baseExercises[weekIndex],
-        newWords: baseWords[weekIndex],
-        studyMinutes: baseMinutes[weekIndex],
-        passThreshold: 70,
-      });
-    }
-
-    return weeks;
-  }, [completedCount, currentAvgScore, totalAttempts, profile?.streakDays]);
-
-  // Total metrics
-  const totalStudyHours = (weeklyData.reduce((acc, curr) => acc + curr.studyMinutes, 0) / 60).toFixed(1);
-  const totalWordsLearned = weeklyData[weeklyData.length - 1]?.newWords || 385;
-  const currentWeekExercises = weeklyData[weeklyData.length - 1]?.exercises || 80;
-  const accuracyGrowth = (
-    weeklyData[weeklyData.length - 1].accuracy - weeklyData[0].accuracy
-  );
+  const currentWeekExercises = weeklyData[weeklyData.length - 1]?.exercises || 0;
 
   // Custom Editorial Tooltip
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -116,13 +77,15 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-zinc-200">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 mb-1">
-            [Аналитика успеваемости • Recharts Engine]
+            [Аналитика успеваемости • Реальные данные тестов]
           </div>
           <h2 className="font-serif text-2xl md:text-3xl text-zinc-950 font-normal">
             Динамика изучения немецкого языка по неделям
           </h2>
           <p className="text-xs text-zinc-500 font-sans mt-1">
-            Комплексный мониторинг точности тестов, объема словарного запаса (Wortschatz) и времени занятий.
+            {hasAnyAttempt
+              ? `Мониторинг на основе ${analytics.passedLessonsCount} сданных модулей и ${analytics.totalAttempts} попыток тестирования.`
+              : 'Пройдите ваш первый модуль A1, чтобы активировать персональную графическую аналитику.'}
           </p>
         </div>
 
@@ -131,7 +94,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
           <button
             id="metric-tab-accuracy"
             onClick={() => setActiveMetric('accuracy')}
-            className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold ${
+            className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold cursor-pointer ${
               activeMetric === 'accuracy'
                 ? 'bg-black text-white'
                 : 'text-zinc-600 hover:text-zinc-950'
@@ -142,7 +105,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
           <button
             id="metric-tab-volume"
             onClick={() => setActiveMetric('volume')}
-            className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold ${
+            className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold cursor-pointer ${
               activeMetric === 'volume'
                 ? 'bg-black text-white'
                 : 'text-zinc-600 hover:text-zinc-950'
@@ -153,7 +116,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
           <button
             id="metric-tab-time"
             onClick={() => setActiveMetric('time')}
-            className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold ${
+            className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold cursor-pointer ${
               activeMetric === 'time'
                 ? 'bg-black text-white'
                 : 'text-zinc-600 hover:text-zinc-950'
@@ -171,33 +134,52 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
           <div className="font-serif text-2xl font-normal text-zinc-950 mt-1">
             {totalWordsLearned} <span className="text-xs text-zinc-500 font-mono">слов</span>
           </div>
-          <div className="text-[10px] text-zinc-500 mt-0.5">+45 за неделю</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">
+            {hasAnyAttempt ? 'Изучено в модулях' : 'Ожидает 1-го теста'}
+          </div>
         </div>
 
         <div className="bg-[#FAFAFA] p-4">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Общее время обучения</div>
+          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Время практики</div>
           <div className="font-serif text-2xl font-normal text-zinc-950 mt-1">
             {totalStudyHours} <span className="text-xs text-zinc-500 font-mono">часов</span>
           </div>
-          <div className="text-[10px] text-zinc-500 mt-0.5">8 учебных недель</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">
+            {analytics.totalStudyMinutes} минут тестов
+          </div>
         </div>
 
         <div className="bg-[#FAFAFA] p-4">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Рост точности</div>
+          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Динамика точности</div>
           <div className="font-serif text-2xl font-normal text-[#0033CC] mt-1">
-            +{accuracyGrowth}%
+            {accuracyGrowth >= 0 ? `+${accuracyGrowth}%` : `${accuracyGrowth}%`}
           </div>
-          <div className="text-[10px] text-zinc-500 mt-0.5">С 58% до {currentAvgScore}%</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">
+            {hasAnyAttempt ? `Текущая точность: ${avgScore}%` : 'Нет данных'}
+          </div>
         </div>
 
         <div className="bg-[#FAFAFA] p-4">
           <div className="text-[9px] uppercase tracking-wider text-zinc-400">Решено вопросов</div>
           <div className="font-serif text-2xl font-normal text-zinc-950 mt-1">
-            {currentWeekExercises} <span className="text-xs text-zinc-500 font-mono">задач</span>
+            {totalQuestionsSolved} <span className="text-xs text-zinc-500 font-mono">задач</span>
           </div>
-          <div className="text-[10px] text-zinc-500 mt-0.5">на текущей неделе</div>
+          <div className="text-[10px] text-zinc-500 mt-0.5">
+            {currentWeekExercises} за тек. неделю
+          </div>
         </div>
       </div>
+
+      {!hasAnyAttempt && (
+        <div className="bg-zinc-100 border border-zinc-300 p-4 font-mono text-xs text-zinc-800 text-center flex flex-col gap-1">
+          <div className="font-bold text-zinc-950 uppercase text-[11px]">
+            [Информационная панель]
+          </div>
+          <p className="font-sans text-xs text-zinc-600">
+            Вы еще не проходили тесты. Пройдите первый модуль в каталоге уроков, чтобы график и компетенции автоматически заполнились вашими реальными результатами.
+          </p>
+        </div>
+      )}
 
       {/* Main Chart Rendering Box */}
       <div className="w-full h-80 pt-2 font-mono text-xs">
@@ -221,7 +203,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
               <YAxis
                 stroke="#71717A"
                 fontSize={11}
-                domain={[40, 100]}
+                domain={[0, 100]}
                 unit="%"
                 tickLine={false}
                 axisLine={{ stroke: '#D4D4D8' }}
@@ -235,7 +217,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
               <Area
                 type="monotone"
                 dataKey="accuracy"
-                name="Средняя точность ответов"
+                name="Точность ответов (реальная)"
                 unit="%"
                 stroke="#0033CC"
                 strokeWidth={2.5}
@@ -246,7 +228,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
               <Line
                 type="monotone"
                 dataKey="passThreshold"
-                name="Экзаменационный порог Goethe A1"
+                name="Порог сдачи (70%)"
                 unit="%"
                 stroke="#A1A1AA"
                 strokeDasharray="4 4"
@@ -278,7 +260,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
               />
               <Bar
                 dataKey="newWords"
-                name="Суммарный словарный запас"
+                name="Словарный запас"
                 unit=" слов"
                 fill="#18181B"
                 barSize={18}
@@ -317,7 +299,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
               <Line
                 type="monotone"
                 dataKey="studyMinutes"
-                name="Время практики в неделю"
+                name="Время практики"
                 unit=" мин"
                 stroke="#09090B"
                 strokeWidth={2.5}
@@ -332,54 +314,33 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
       {/* Competence Breakdown footer */}
       <div className="border-t border-zinc-200 pt-6">
         <div className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 mb-3">
-          [Распределение компетенций A1 по неделям]
+          [Распределение компетенций A1 по реальным ответам]
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 font-mono text-xs">
-          <div className="p-3 bg-[#FAFAFA] border border-zinc-200">
-            <div className="flex justify-between items-center text-[10px] uppercase text-zinc-500 mb-1">
-              <span>Grammatik</span>
-              <span className="font-bold text-zinc-950">85%</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
+          {competences.map((comp) => (
+            <div key={comp.id} className="p-3 bg-[#FAFAFA] border border-zinc-200 flex flex-col justify-between gap-2">
+              <div>
+                <div className="flex justify-between items-center text-[10px] uppercase text-zinc-500 mb-1">
+                  <span className="font-bold text-zinc-800">{comp.title}</span>
+                  <span className={`font-bold ${comp.hasData ? 'text-[#0033CC]' : 'text-zinc-400'}`}>
+                    {comp.hasData ? `${comp.accuracy}%` : '0%'}
+                  </span>
+                </div>
+                <div className="w-full bg-zinc-200 h-1 mt-1">
+                  <div
+                    className="bg-[#0033CC] h-1 transition-all duration-300"
+                    style={{ width: comp.hasData ? `${comp.accuracy}%` : '0%' }}
+                  />
+                </div>
+              </div>
+              <div className="text-[10px] text-zinc-500 font-sans leading-tight">
+                {comp.description}
+              </div>
             </div>
-            <div className="w-full bg-zinc-200 h-1">
-              <div className="bg-black h-1" style={{ width: '85%' }} />
-            </div>
-            <div className="text-[10px] text-zinc-500 mt-2 font-sans">Порядок слов, спряжение глаголов</div>
-          </div>
-
-          <div className="p-3 bg-[#FAFAFA] border border-zinc-200">
-            <div className="flex justify-between items-center text-[10px] uppercase text-zinc-500 mb-1">
-              <span>Wortschatz</span>
-              <span className="font-bold text-[#0033CC]">92%</span>
-            </div>
-            <div className="w-full bg-zinc-200 h-1">
-              <div className="bg-[#0033CC] h-1" style={{ width: '92%' }} />
-            </div>
-            <div className="text-[10px] text-zinc-500 mt-2 font-sans">Семья, покупки, числа, город</div>
-          </div>
-
-          <div className="p-3 bg-[#FAFAFA] border border-zinc-200">
-            <div className="flex justify-between items-center text-[10px] uppercase text-zinc-500 mb-1">
-              <span>Hören & Audio</span>
-              <span className="font-bold text-zinc-950">78%</span>
-            </div>
-            <div className="w-full bg-zinc-200 h-1">
-              <div className="bg-black h-1" style={{ width: '78%' }} />
-            </div>
-            <div className="text-[10px] text-zinc-500 mt-2 font-sans">Восприятие фраз на слух</div>
-          </div>
-
-          <div className="p-3 bg-[#FAFAFA] border border-zinc-200">
-            <div className="flex justify-between items-center text-[10px] uppercase text-zinc-500 mb-1">
-              <span>Lesen / Письмо</span>
-              <span className="font-bold text-zinc-950">80%</span>
-            </div>
-            <div className="w-full bg-zinc-200 h-1">
-              <div className="bg-black h-1" style={{ width: '80%' }} />
-            </div>
-            <div className="text-[10px] text-zinc-500 mt-2 font-sans">Шаблоны коротких писем</div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
   );
 };
+

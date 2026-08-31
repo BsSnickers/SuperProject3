@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { WeeklyProgressCharts } from './WeeklyProgressCharts';
+import { calculateRealAnalytics, RealAnalyticsSummary } from '../utils/analytics';
 
-export const ProfileView: React.FC = () => {
+interface ProfileViewProps {
+  onStartLesson?: (lessonId: string) => void;
+}
+
+export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson }) => {
   const { profile, progress, isEmailVerified, sendVerificationEmail, checkEmailVerification } = useAuth();
   const [resending, setResending] = useState(false);
   const [checking, setChecking] = useState(false);
   const [statusNotice, setStatusNotice] = useState<string | null>(null);
 
-  const progressList = Object.values(progress) as { passed?: boolean; scorePercent: number; attemptsCount?: number }[];
-  const passedLessonsCount = progressList.filter((p) => p.passed).length;
-  const totalAttempts = profile?.totalAttempts || progressList.reduce((a, b) => a + (b.attemptsCount || 1), 0);
-  
-  const scores = progressList.map((p) => p.scorePercent || 0);
-  const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+  const analytics: RealAnalyticsSummary = useMemo(() => {
+    return calculateRealAnalytics(profile, progress);
+  }, [profile, progress]);
+
+  const {
+    passedLessonsCount,
+    totalLessonsCount,
+    avgScore,
+    totalQuestionsSolved,
+    totalAttempts,
+    lessonDetails,
+    hasAnyAttempt,
+  } = analytics;
 
   // Generate 30 days activity grid
   const today = new Date();
@@ -22,7 +34,7 @@ export const ProfileView: React.FC = () => {
     d.setDate(today.getDate() - (29 - i));
     const dateStr = d.toISOString().split('T')[0];
     const isToday = i === 29;
-    const hasActivity = (profile?.activityDates || []).includes(dateStr) || isToday;
+    const hasActivity = (profile?.activityDates || []).includes(dateStr) || (isToday && hasAnyAttempt);
     return {
       date: dateStr,
       dayNumber: d.getDate(),
@@ -134,17 +146,17 @@ export const ProfileView: React.FC = () => {
         <div className="font-mono text-xs shrink-0 flex flex-col gap-1 text-right">
           <span className="text-[10px] text-zinc-400 uppercase">Уровень доступа:</span>
           <span className="font-bold text-zinc-950 uppercase">
-            {profile?.role === 'admin' ? '[Администратор курса]' : '[Слушатель курса]'}
+            {profile?.role === 'admin' ? '[Администратор курса]' : '[Студент]'}
           </span>
         </div>
       </div>
 
-      {/* 4 Metrics Architectural Grid */}
+      {/* 4 Real Metrics Architectural Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-300 border border-zinc-300 font-mono text-xs">
         <div className="bg-white p-6">
           <div className="text-[9px] uppercase tracking-wider text-zinc-400">Стрик занятий</div>
           <div className="font-serif text-3xl text-zinc-950 font-normal mt-2">
-            {profile?.streakDays || 1} дн.
+            {profile?.streakDays || 0} дн.
           </div>
           <div className="text-[10px] text-zinc-500 mt-1">Непрерывная серия</div>
         </div>
@@ -152,9 +164,9 @@ export const ProfileView: React.FC = () => {
         <div className="bg-white p-6">
           <div className="text-[9px] uppercase tracking-wider text-zinc-400">Сдано модулей</div>
           <div className="font-serif text-3xl text-zinc-950 font-normal mt-2">
-            {passedLessonsCount} <span className="text-zinc-400 text-lg">/ 5</span>
+            {passedLessonsCount} <span className="text-zinc-400 text-lg">/ {totalLessonsCount}</span>
           </div>
-          <div className="text-[10px] text-zinc-500 mt-1">Текущий порог A1</div>
+          <div className="text-[10px] text-zinc-500 mt-1">Порог Goethe A1: 70%</div>
         </div>
 
         <div className="bg-white p-6">
@@ -162,20 +174,109 @@ export const ProfileView: React.FC = () => {
           <div className="font-serif text-3xl text-[#0033CC] font-normal mt-2">
             {avgScore > 0 ? `${avgScore}%` : '—'}
           </div>
-          <div className="text-[10px] text-zinc-500 mt-1">Экзаменационная точность</div>
+          <div className="text-[10px] text-zinc-500 mt-1">
+            {hasAnyAttempt ? `По ${analytics.lessonDetails.filter(d => d.progress !== null).length} тестам` : 'Нет данных'}
+          </div>
         </div>
 
         <div className="bg-white p-6">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Всего попыток</div>
+          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Всего вопросов</div>
           <div className="font-serif text-3xl text-zinc-950 font-normal mt-2">
-            {totalAttempts}
+            {totalQuestionsSolved}
           </div>
-          <div className="text-[10px] text-zinc-500 mt-1">Решенных тестов</div>
+          <div className="text-[10px] text-zinc-500 mt-1">
+            {totalAttempts} попыток тестирования
+          </div>
         </div>
       </div>
 
       {/* Weekly Progress Analytics with Recharts */}
       <WeeklyProgressCharts profile={profile} progress={progress} />
+
+      {/* Detailed Journal of Completed & Available Modules */}
+      <div className="border border-zinc-300 bg-white p-6 md:p-8 flex flex-col gap-6">
+        <div>
+          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 mb-1">
+            [Журнал результатов • Реальный прогресс по модулям]
+          </div>
+          <h2 className="font-serif text-2xl md:text-3xl text-zinc-950 font-normal">
+            Анализ прохождения модулей A1
+          </h2>
+          <p className="text-xs text-zinc-500 font-sans mt-1">
+            Детальный отчет по всем 21 уроку курса Goethe A1 с реальными результатами и количеством попыток.
+          </p>
+        </div>
+
+        <div className="overflow-x-auto border border-zinc-200">
+          <table className="w-full font-mono text-xs text-left border-collapse">
+            <thead className="bg-[#F4F4F5] text-[10px] uppercase tracking-wider text-zinc-500 border-b border-zinc-300">
+              <tr>
+                <th className="p-3">Модуль</th>
+                <th className="p-3">Тема урока</th>
+                <th className="p-3">Статус</th>
+                <th className="p-3 text-center">Точность</th>
+                <th className="p-3 text-center">Попытки</th>
+                <th className="p-3 text-right">Дата сдачи</th>
+                {onStartLesson && <th className="p-3 text-right">Действие</th>}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-200">
+              {lessonDetails.map(({ lesson, progress: prog, status }) => (
+                <tr key={lesson.id} className="hover:bg-zinc-50 transition-colors">
+                  <td className="p-3 font-bold text-zinc-950 shrink-0">
+                    №{lesson.number.toString().padStart(2, '0')}
+                  </td>
+                  <td className="p-3 font-sans">
+                    <div className="font-bold text-zinc-950">{lesson.titleRu}</div>
+                    <div className="text-[11px] text-zinc-500 font-mono">{lesson.titleDe}</div>
+                  </td>
+                  <td className="p-3 whitespace-nowrap">
+                    {status === 'passed' ? (
+                      <span className="px-2 py-0.5 bg-zinc-950 text-white font-bold text-[10px] uppercase border border-zinc-950">
+                        [Сдано]
+                      </span>
+                    ) : status === 'failed' ? (
+                      <span className="px-2 py-0.5 bg-zinc-100 text-zinc-900 border border-zinc-400 text-[10px] font-bold uppercase">
+                        [Не сдано]
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 bg-zinc-100 text-zinc-400 border border-zinc-200 text-[10px] uppercase">
+                        [Не начат]
+                      </span>
+                    )}
+                  </td>
+                  <td className="p-3 text-center font-bold">
+                    {prog ? (
+                      <span className={prog.scorePercent >= lesson.passThreshold ? 'text-[#0033CC]' : 'text-zinc-800'}>
+                        {prog.scorePercent}%
+                      </span>
+                    ) : (
+                      <span className="text-zinc-300">—</span>
+                    )}
+                  </td>
+                  <td className="p-3 text-center text-zinc-600">
+                    {prog?.attemptsCount || 0}
+                  </td>
+                  <td className="p-3 text-right text-zinc-500 whitespace-nowrap text-[11px]">
+                    {prog?.completedAt ? new Date(prog.completedAt).toLocaleDateString('ru-RU') : '—'}
+                  </td>
+                  {onStartLesson && (
+                    <td className="p-3 text-right whitespace-nowrap">
+                      <button
+                        type="button"
+                        onClick={() => onStartLesson(lesson.id)}
+                        className="px-2.5 py-1 bg-white hover:bg-zinc-100 border border-zinc-300 text-zinc-900 text-[10px] uppercase font-bold tracking-wider cursor-pointer"
+                      >
+                        {prog ? 'Повторить' : 'Пройти'}
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Activity Matrix (30 Days) */}
       <div className="border border-zinc-300 bg-white p-6 md:p-8 flex flex-col gap-6">
