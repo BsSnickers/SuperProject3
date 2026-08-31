@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.admin == true || 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+
+    // Users collection
+    match /users/{userId} {
+      // Any authenticated user can read user profiles (needed for admin view & student stats)
+      allow read: if isAuthenticated();
+      
+      // User can create their own document with role 'user', or admin can create any user
+      allow create: if isAuthenticated() && (isAdmin() || (request.auth.uid == userId && (!('role' in request.resource.data) || request.resource.data.role == 'user')));
+      // User can update their own profile but cannot change their role; only admin can change roles
+      allow update: if isAuthenticated() && (isAdmin() || (request.auth.uid == userId && (!('role' in request.resource.data) || request.resource.data.role == resource.data.role)));
+      allow delete: if isAdmin();
+      
+      // Progress subcollection
+      match /progress/{lessonId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+
+    // Applications collection (for Au-Pair and Ausbildung tracker)
+    match /applications/{appId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || (isAuthenticated() && request.resource.data.userId == request.auth.uid);
+    }
+  }
+}
