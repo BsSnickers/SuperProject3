@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CheckCircle2, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { LESSONS_DATA } from '../data/lessonsData';
 import { AU_PAIR_STAGES, AUSBILDUNG_STAGES, PROGRAM_STATUS_MAP } from '../data/programsData';
@@ -10,7 +11,7 @@ interface DashboardViewProps {
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ onStartLesson, onNavigateTab }) => {
-  const { profile, progress } = useAuth();
+  const { profile, progress, isAdmin } = useAuth();
   const [filterDifficulty, setFilterDifficulty] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'number' | 'learners'>('number');
@@ -279,22 +280,32 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onStartLesson, onN
             const score = userProgress?.scorePercent;
 
             const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
-            const isUnlocked = lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
+            const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
 
             return (
               <div
                 key={lesson.id}
                 id={`lesson-card-${lesson.id}`}
-                className="border border-zinc-300 bg-white p-6 flex flex-col justify-between gap-6 hover:border-black transition-colors"
+                className={`border bg-white p-6 flex flex-col justify-between gap-6 transition-colors ${
+                  isPassed ? 'border-emerald-400/80 bg-emerald-50/10 shadow-2xs' : 'border-zinc-300 hover:border-black'
+                }`}
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <span className="font-mono text-xs text-zinc-400">
                       [Paper #{lesson.number < 10 ? `0${lesson.number}` : lesson.number}]
                     </span>
-                    <span className="font-mono text-[10px] border border-zinc-300 px-1.5 py-0.5 text-zinc-600 bg-[#FAFAFA]">
-                      {lesson.estimatedMinutes} мин
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {isPassed && (
+                        <span className="font-mono text-[10px] border border-emerald-300 px-2 py-0.5 text-emerald-800 bg-emerald-50 flex items-center gap-1 font-bold uppercase tracking-wider">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                          Пройден
+                        </span>
+                      )}
+                      <span className="font-mono text-[10px] border border-zinc-300 px-1.5 py-0.5 text-zinc-600 bg-[#FAFAFA]">
+                        {lesson.estimatedMinutes} мин
+                      </span>
+                    </div>
                   </div>
 
                   <h3 className="font-serif text-xl font-normal text-zinc-950 mb-1">
@@ -328,8 +339,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onStartLesson, onN
                       <div className="text-[9px] uppercase text-zinc-400">Результат</div>
                       <div className="font-bold mt-0.5">
                         {score !== undefined ? (
-                          <span className={isPassed ? 'text-zinc-950' : 'text-zinc-600'}>
+                          <span className={`flex items-center gap-1 ${isPassed ? 'text-emerald-700 font-bold' : 'text-zinc-600'}`}>
                             {score}%
+                            {isPassed && <Check className="w-3 h-3 text-emerald-600 inline" />}
                           </span>
                         ) : (
                           <span className="text-zinc-400">—</span>
@@ -359,9 +371,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onStartLesson, onN
                     <button
                       id={`start-lesson-btn-${lesson.id}`}
                       onClick={() => onStartLesson(lesson.id)}
-                      className="w-full py-2.5 px-3 bg-zinc-950 hover:bg-zinc-800 text-white font-mono text-xs uppercase tracking-wider font-bold transition-colors border border-zinc-950"
+                      className={`w-full py-2.5 px-3 font-mono text-xs uppercase tracking-wider font-bold transition-colors border ${
+                        isPassed
+                          ? 'bg-emerald-950 hover:bg-emerald-900 text-white border-emerald-950'
+                          : 'bg-zinc-950 hover:bg-zinc-800 text-white border-zinc-950'
+                      }`}
                     >
-                      {isPassed ? 'Повторить модуль →' : 'Начать модуль →'}
+                      {isPassed ? 'Повторить модуль ✓' : 'Начать модуль →'}
                     </button>
                   )}
                 </div>

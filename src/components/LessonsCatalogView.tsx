@@ -7,7 +7,7 @@ interface LessonsCatalogViewProps {
 }
 
 export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({ onStartLesson }) => {
-  const { progress } = useAuth();
+  const { progress, isAdmin } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [tabFilter, setTabFilter] = useState<'all' | 'a1_1' | 'a1_2' | 'completed' | 'exams'>('all');
 
@@ -94,7 +94,7 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({ onStartL
           const isExam = lesson.tags.includes('Экзамен') || lesson.titleRu.toLowerCase().includes('экзамен');
 
           const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
-          const isUnlocked = lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
+          const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
 
           return (
             <div

@@ -16,7 +16,7 @@ import { LESSONS_DATA } from './data/lessonsData';
 import { Lesson } from './types';
 
 function MainAppContent() {
-  const { user, loading, isEmailVerified, saveProgress } = useAuth();
+  const { user, loading, isEmailVerified, saveProgress, progress, isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
   const [selectedProgram, setSelectedProgram] = useState<ProgramType>('au-pair');
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -128,7 +128,12 @@ function MainAppContent() {
 
   const handleStartLesson = (lessonId: string) => {
     const lesson = LESSONS_DATA.find((l) => l.id === lessonId);
-    if (lesson && !lesson.isComingSoon) {
+    if (!lesson || lesson.isComingSoon) return;
+
+    const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
+    const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
+
+    if (isUnlocked) {
       setActiveLesson(lesson);
     }
   };
@@ -146,13 +151,13 @@ function MainAppContent() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FA] text-slate-900 font-sans">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#F6F8FA] text-slate-900 font-sans">
       {/* Fixed Left Navigation Sidebar */}
       <Sidebar activeTab={activeTab} onSelectTab={handleSelectTab} />
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 overflow-y-auto max-h-screen flex flex-col">
-        <div className="flex-1">
+      <main className="flex-1 min-w-0 md:overflow-y-auto md:max-h-screen flex flex-col">
+        <div className="flex-1 pb-16 md:pb-0">
           {activeTab === 'dashboard' && (
             <DashboardView
               onStartLesson={handleStartLesson}

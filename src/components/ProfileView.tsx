@@ -1,14 +1,16 @@
 import React, { useState, useMemo } from 'react';
+import { Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { WeeklyProgressCharts } from './WeeklyProgressCharts';
 import { calculateRealAnalytics, RealAnalyticsSummary } from '../utils/analytics';
+import { LESSONS_DATA } from '../data/lessonsData';
 
 interface ProfileViewProps {
   onStartLesson?: (lessonId: string) => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson }) => {
-  const { profile, progress, isEmailVerified, sendVerificationEmail, checkEmailVerification } = useAuth();
+  const { profile, progress, isAdmin, isEmailVerified, sendVerificationEmail, checkEmailVerification } = useAuth();
   const [resending, setResending] = useState(false);
   const [checking, setChecking] = useState(false);
   const [statusNotice, setStatusNotice] = useState<string | null>(null);
@@ -221,58 +223,81 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson }) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200">
-              {lessonDetails.map(({ lesson, progress: prog, status }) => (
-                <tr key={lesson.id} className="hover:bg-zinc-50 transition-colors">
-                  <td className="p-3 font-bold text-zinc-950 shrink-0">
-                    №{lesson.number.toString().padStart(2, '0')}
-                  </td>
-                  <td className="p-3 font-sans">
-                    <div className="font-bold text-zinc-950">{lesson.titleRu}</div>
-                    <div className="text-[11px] text-zinc-500 font-mono">{lesson.titleDe}</div>
-                  </td>
-                  <td className="p-3 whitespace-nowrap">
-                    {status === 'passed' ? (
-                      <span className="px-2 py-0.5 bg-zinc-950 text-white font-bold text-[10px] uppercase border border-zinc-950">
-                        [Сдано]
-                      </span>
-                    ) : status === 'failed' ? (
-                      <span className="px-2 py-0.5 bg-zinc-100 text-zinc-900 border border-zinc-400 text-[10px] font-bold uppercase">
-                        [Не сдано]
-                      </span>
-                    ) : (
-                      <span className="px-2 py-0.5 bg-zinc-100 text-zinc-400 border border-zinc-200 text-[10px] uppercase">
-                        [Не начат]
-                      </span>
-                    )}
-                  </td>
-                  <td className="p-3 text-center font-bold">
-                    {prog ? (
-                      <span className={prog.scorePercent >= lesson.passThreshold ? 'text-[#0033CC]' : 'text-zinc-800'}>
-                        {prog.scorePercent}%
-                      </span>
-                    ) : (
-                      <span className="text-zinc-300">—</span>
-                    )}
-                  </td>
-                  <td className="p-3 text-center text-zinc-600">
-                    {prog?.attemptsCount || 0}
-                  </td>
-                  <td className="p-3 text-right text-zinc-500 whitespace-nowrap text-[11px]">
-                    {prog?.completedAt ? new Date(prog.completedAt).toLocaleDateString('ru-RU') : '—'}
-                  </td>
-                  {onStartLesson && (
-                    <td className="p-3 text-right whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => onStartLesson(lesson.id)}
-                        className="px-2.5 py-1 bg-white hover:bg-zinc-100 border border-zinc-300 text-zinc-900 text-[10px] uppercase font-bold tracking-wider cursor-pointer"
-                      >
-                        {prog ? 'Повторить' : 'Пройти'}
-                      </button>
+              {lessonDetails.map(({ lesson, progress: prog, status }) => {
+                const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
+                const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
+
+                return (
+                  <tr key={lesson.id} className="hover:bg-zinc-50 transition-colors">
+                    <td className="p-3 font-bold text-zinc-950 shrink-0">
+                      №{lesson.number.toString().padStart(2, '0')}
                     </td>
-                  )}
-                </tr>
-              ))}
+                    <td className="p-3 font-sans">
+                      <div className="font-bold text-zinc-950">{lesson.titleRu}</div>
+                      <div className="text-[11px] text-zinc-500 font-mono">{lesson.titleDe}</div>
+                    </td>
+                    <td className="p-3 whitespace-nowrap">
+                      {status === 'passed' ? (
+                        <span className="px-2 py-0.5 bg-zinc-950 text-white font-bold text-[10px] uppercase border border-zinc-950">
+                          [Сдано]
+                        </span>
+                      ) : status === 'failed' ? (
+                        <span className="px-2 py-0.5 bg-zinc-100 text-zinc-900 border border-zinc-400 text-[10px] font-bold uppercase">
+                          [Не сдано]
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 bg-zinc-100 text-zinc-400 border border-zinc-200 text-[10px] uppercase">
+                          [Не начат]
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3 text-center font-bold">
+                      {prog ? (
+                        <span className={prog.scorePercent >= lesson.passThreshold ? 'text-[#0033CC]' : 'text-zinc-800'}>
+                          {prog.scorePercent}%
+                        </span>
+                      ) : (
+                        <span className="text-zinc-300">—</span>
+                      )}
+                    </td>
+                    <td className="p-3 text-center text-zinc-600">
+                      {prog?.attemptsCount || 0}
+                    </td>
+                    <td className="p-3 text-right text-zinc-500 whitespace-nowrap text-[11px]">
+                      {prog?.completedAt ? new Date(prog.completedAt).toLocaleDateString('ru-RU') : '—'}
+                    </td>
+                    {onStartLesson && (
+                      <td className="p-3 text-right whitespace-nowrap">
+                        {lesson.isComingSoon ? (
+                          <button
+                            disabled
+                            className="px-2.5 py-1 bg-zinc-100 text-zinc-400 border border-zinc-200 text-[10px] font-mono uppercase cursor-not-allowed"
+                          >
+                            Скоро
+                          </button>
+                        ) : !isUnlocked ? (
+                          <button
+                            disabled
+                            title={`Модуль #${lesson.number} заблокирован. Для доступа сначала пройдите Модуль #${lesson.number - 1}`}
+                            className="px-2.5 py-1 bg-zinc-100 text-zinc-400 border border-zinc-200 text-[10px] font-mono uppercase cursor-not-allowed flex items-center gap-1.5 ml-auto"
+                          >
+                            <Lock size={11} className="shrink-0 text-zinc-400" />
+                            <span>Заблокирован</span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => onStartLesson(lesson.id)}
+                            className="px-2.5 py-1 bg-white hover:bg-zinc-100 border border-zinc-300 text-zinc-900 text-[10px] uppercase font-bold tracking-wider cursor-pointer font-mono"
+                          >
+                            {prog ? 'Повторить' : 'Пройти'}
+                          </button>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

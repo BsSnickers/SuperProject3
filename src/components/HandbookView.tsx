@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { HANDBOOK_DATA } from '../data/handbookData';
+import { LESSONS_DATA } from '../data/lessonsData';
+import { useAuth } from '../context/AuthContext';
 import { AudioButton } from './AudioButton';
 import { HandbookSection } from '../types';
 import {
@@ -16,6 +18,7 @@ import {
   Sparkles,
   ArrowUpRight,
   SlidersHorizontal,
+  Lock,
 } from 'lucide-react';
 
 interface HandbookViewProps {
@@ -25,6 +28,7 @@ interface HandbookViewProps {
 type FilterCategory = 'all' | 'grammar' | 'vocabulary' | 'visa-tips' | 'A1.1' | 'A1.2';
 
 export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson }) => {
+  const { progress, isAdmin } = useAuth();
   const [selectedSectionId, setSelectedSectionId] = useState<string>(HANDBOOK_DATA[0].id);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<FilterCategory>('all');
@@ -472,17 +476,47 @@ export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson }) => 
               </div>
 
               {/* Practical lesson link if available */}
-              {currentSection.relatedLessonId && onStartLesson && (
-                <button
-                  id={`handbook-practice-link-${currentSection.relatedLessonId}`}
-                  type="button"
-                  onClick={() => onStartLesson(currentSection.relatedLessonId!)}
-                  className="font-mono text-[11px] font-bold px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white transition-colors flex items-center gap-1.5 border border-zinc-950 cursor-pointer shadow-2xs"
-                >
-                  <span>Практический тест к теме</span>
-                  <ArrowUpRight size={13} />
-                </button>
-              )}
+              {currentSection.relatedLessonId && onStartLesson && (() => {
+                const relatedLesson = LESSONS_DATA.find((l) => l.id === currentSection.relatedLessonId);
+                if (!relatedLesson) return null;
+
+                const prevLesson = LESSONS_DATA.find((l) => l.number === relatedLesson.number - 1);
+                const isUnlocked = isAdmin || relatedLesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
+
+                if (relatedLesson.isComingSoon) {
+                  return (
+                    <span className="font-mono text-[11px] font-bold px-3 py-1.5 bg-zinc-100 text-zinc-400 border border-zinc-200">
+                      Тест в разработке
+                    </span>
+                  );
+                }
+
+                if (!isUnlocked) {
+                  return (
+                    <button
+                      disabled
+                      type="button"
+                      title={`Тест заблокирован. Для доступа сначала пройдите Модуль #${relatedLesson.number - 1}`}
+                      className="font-mono text-[11px] font-bold px-3 py-1.5 bg-zinc-100 text-zinc-400 border border-zinc-300 flex items-center gap-1.5 cursor-not-allowed"
+                    >
+                      <Lock size={12} className="shrink-0 text-zinc-400" />
+                      <span>Тест заблокирован (Модуль #{relatedLesson.number})</span>
+                    </button>
+                  );
+                }
+
+                return (
+                  <button
+                    id={`handbook-practice-link-${currentSection.relatedLessonId}`}
+                    type="button"
+                    onClick={() => onStartLesson(currentSection.relatedLessonId!)}
+                    className="font-mono text-[11px] font-bold px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white transition-colors flex items-center gap-1.5 border border-zinc-950 cursor-pointer shadow-2xs"
+                  >
+                    <span>Практический тест к теме</span>
+                    <ArrowUpRight size={13} />
+                  </button>
+                );
+              })()}
             </div>
 
             <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-normal text-zinc-950 tracking-tight mt-1 leading-tight">
