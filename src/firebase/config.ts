@@ -2,7 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-const configModules = import.meta.glob<{ default: Record<string, string> }>('../../firebase-applet-config.json', { eager: true });
+const configModules = import.meta.glob<{ default: Record<string, string> }>('../../*firebase-applet-config*.json', { eager: true });
 const firebaseConfigJson = configModules['../../firebase-applet-config.json']?.default || {};
 
 const metaEnv = (import.meta as any).env || {};
