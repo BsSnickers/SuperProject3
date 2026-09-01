@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import logoImg from '../assets/logo.png';
-import { CheckCircle2, Check } from 'lucide-react';
+import { CheckCircle2, Check, BookOpen } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { LESSONS_DATA } from '../data/lessonsData';
+import { HANDBOOK_DATA } from '../data/handbookData';
 import { AU_PAIR_STAGES, AUSBILDUNG_STAGES, PROGRAM_STATUS_MAP } from '../data/programsData';
 import { NavTab } from './Sidebar';
 
 interface DashboardViewProps {
   onStartLesson: (lessonId: string) => void;
   onNavigateTab: (tab: NavTab) => void;
+  onOpenHandbook?: (topicId: string) => void;
 }
 
-export const DashboardView: React.FC<DashboardViewProps> = ({ onStartLesson, onNavigateTab }) => {
+export const DashboardView: React.FC<DashboardViewProps> = ({ onStartLesson, onNavigateTab, onOpenHandbook }) => {
   const { profile, progress, isAdmin } = useAuth();
   const [filterDifficulty, setFilterDifficulty] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -315,15 +317,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onStartLesson, onN
                         [Paper #{lesson.number < 10 ? `0${lesson.number}` : lesson.number}]
                       </span>
                       <div className="flex items-center gap-1.5">
-                        {isPassed && (
+                        {isPassed ? (
                           <span className="font-mono text-[10px] border border-emerald-600 dark:border-emerald-400 px-2 py-0.5 text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950 flex items-center gap-1 font-bold uppercase tracking-wider">
                             <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
                             Пройден
                           </span>
+                        ) : (
+                          <span className="font-mono text-[10px] border border-zinc-300 dark:border-white/20 px-1.5 py-0.5 text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-white/10">
+                            {lesson.questionsCount} вопр.
+                          </span>
                         )}
-                        <span className="font-mono text-[10px] border border-zinc-300 dark:border-white/20 px-1.5 py-0.5 text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-white/10">
-                          {lesson.estimatedMinutes} мин
-                        </span>
                       </div>
                     </div>
 
@@ -362,7 +365,29 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onStartLesson, onN
                     </div>
                   </div>
 
-                  <div>
+                  {/* Action Buttons */}
+                  <div className="flex flex-col gap-2">
+                    {/* Open Handbook Button */}
+                    {(() => {
+                      const matchingHandbookTopic = HANDBOOK_DATA.find(
+                        (h) => h.relatedLessonId === lesson.id || h.topicNumber === lesson.number
+                      ) || HANDBOOK_DATA[0];
+
+                      return (
+                        <button
+                          id={`dashboard-handbook-btn-${lesson.id}`}
+                          type="button"
+                          onClick={() => onOpenHandbook?.(matchingHandbookTopic.id)}
+                          className="w-full py-2.5 px-3 font-mono text-xs uppercase tracking-wider font-bold transition-colors border text-center flex items-center justify-center gap-1.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 border-zinc-300 dark:border-zinc-700 cursor-pointer shadow-2xs"
+                          title={`Открыть в справочнике: ${matchingHandbookTopic.title}`}
+                        >
+                          <BookOpen size={13} className="text-zinc-700 dark:text-zinc-300 shrink-0" />
+                          <span>Открыть справочник →</span>
+                        </button>
+                      );
+                    })()}
+
+                    {/* Start / Repeat / Lock Button */}
                     {lesson.isComingSoon ? (
                       <button
                         disabled

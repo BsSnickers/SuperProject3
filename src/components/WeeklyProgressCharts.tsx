@@ -1,17 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
+  ReferenceLine,
+  Cell,
 } from 'recharts';
 import { UserProfile, LessonProgress } from '../types';
 import { calculateRealAnalytics, RealAnalyticsSummary } from '../utils/analytics';
@@ -21,38 +19,51 @@ interface WeeklyProgressChartsProps {
   progress: Record<string, LessonProgress>;
 }
 
-type ChartMetric = 'accuracy' | 'volume' | 'time';
-
 export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
   profile,
   progress,
 }) => {
-  const [activeMetric, setActiveMetric] = useState<ChartMetric>('accuracy');
-
   const analytics: RealAnalyticsSummary = useMemo(() => {
     return calculateRealAnalytics(profile, progress);
   }, [profile, progress]);
 
   const {
-    weeklyData,
+    moduleData,
     totalWordsLearned,
-    totalStudyHours,
-    accuracyGrowth,
+    passedLessonsCount,
+    totalLessonsCount,
     totalQuestionsSolved,
-    competences,
+    totalQuestionsAttempted,
     hasAnyAttempt,
     avgScore,
   } = analytics;
 
-  const currentWeekExercises = weeklyData[weeklyData.length - 1]?.exercises || 0;
-
   // Custom Editorial Tooltip
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const item = moduleData.find((m) => m.moduleShort === label);
       return (
         <div className="bg-[#09090B] text-white p-3.5 border border-zinc-700 shadow-xl font-mono text-xs max-w-xs">
           <div className="text-[10px] uppercase text-zinc-400 border-b border-zinc-800 pb-1.5 mb-2">
-            [{label}]
+            [{item?.moduleFull || label}]
+          </div>
+          <div className="text-[11px] text-zinc-300 mb-2">
+            Ступень: <span className="text-white font-bold">{item?.difficulty}</span> • Статус:{' '}
+            <span
+              className={`font-bold ${
+                item?.status === 'passed'
+                  ? 'text-emerald-400'
+                  : item?.status === 'failed'
+                  ? 'text-amber-400'
+                  : 'text-zinc-400'
+              }`}
+            >
+              {item?.status === 'passed'
+                ? 'Сдано'
+                : item?.status === 'failed'
+                ? 'Не сдано'
+                : 'Не начато'}
+            </span>
           </div>
           <div className="flex flex-col gap-1">
             {payload.map((entry: any, index: number) => (
@@ -65,6 +76,12 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
               </div>
             ))}
           </div>
+          {item && (
+            <div className="mt-2 pt-1.5 border-t border-zinc-800 text-[10px] text-zinc-400 flex justify-between">
+              <span>Слов в уроке: {item.newWords}</span>
+              <span>Попыток: {item.attemptsCount}</span>
+            </div>
+          )}
         </div>
       );
     }
@@ -72,63 +89,36 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
   };
 
   return (
-    <div id="weekly-progress-charts" className="border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 md:p-8 flex flex-col gap-8 transition-colors">
-      {/* Header & Metric Switcher */}
+    <div id="module-progress-charts" className="border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 md:p-8 flex flex-col gap-8 transition-colors">
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-zinc-200 dark:border-zinc-800">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">
-            [Аналитика успеваемости • Реальные данные тестов]
+            [Аналитика успеваемости • Модульный срез A1]
           </div>
           <h2 className="font-serif text-2xl md:text-3xl text-zinc-950 dark:text-white font-normal">
-            Динамика изучения немецкого языка по неделям
+            Результаты тестирования по модулям
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans mt-1">
             {hasAnyAttempt
-              ? `Мониторинг на основе ${analytics.passedLessonsCount} сданных модулей и ${analytics.totalAttempts} попыток тестирования.`
+              ? `График успеваемости по всем ${totalLessonsCount} модулям курса Goethe-Zertifikat A1 (сдано ${passedLessonsCount} из ${totalLessonsCount}).`
               : 'Пройдите ваш первый модуль A1, чтобы активировать персональную графическую аналитику.'}
           </p>
         </div>
-
-        {/* View Switcher Buttons */}
-        <div className="flex items-center gap-1 font-mono text-xs shrink-0 bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-300 dark:border-zinc-700">
-          <button
-            id="metric-tab-accuracy"
-            onClick={() => setActiveMetric('accuracy')}
-            className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold cursor-pointer ${
-              activeMetric === 'accuracy'
-                ? 'bg-black dark:bg-zinc-100 text-white dark:text-zinc-950'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
-            }`}
-          >
-            Точность (%)
-          </button>
-          <button
-            id="metric-tab-volume"
-            onClick={() => setActiveMetric('volume')}
-            className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold cursor-pointer ${
-              activeMetric === 'volume'
-                ? 'bg-black dark:bg-zinc-100 text-white dark:text-zinc-950'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
-            }`}
-          >
-            Слова и Задания
-          </button>
-          <button
-            id="metric-tab-time"
-            onClick={() => setActiveMetric('time')}
-            className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold cursor-pointer ${
-              activeMetric === 'time'
-                ? 'bg-black dark:bg-zinc-100 text-white dark:text-zinc-950'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
-            }`}
-          >
-            Время (мин)
-          </button>
-        </div>
       </div>
 
-      {/* 4 Weekly KPIs */}
+      {/* 4 KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 font-mono text-center">
+        <div className="bg-[#FAFAFA] dark:bg-zinc-900 p-4">
+          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Сдано модулей</div>
+          <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
+            {passedLessonsCount} <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">из {totalLessonsCount}</span>
+          </div>
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+            {passedLessonsCount > 0 ? `${Math.round((passedLessonsCount / totalLessonsCount) * 100)}% курса завершено` : 'Старт курса'}
+          </div>
+        </div>
+
         <div className="bg-[#FAFAFA] dark:bg-zinc-900 p-4">
           <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Словарный запас</div>
           <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
@@ -140,22 +130,12 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
         </div>
 
         <div className="bg-[#FAFAFA] dark:bg-zinc-900 p-4">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Время практики</div>
-          <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
-            {totalStudyHours} <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">часов</span>
-          </div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-            {analytics.totalStudyMinutes} минут тестов
-          </div>
-        </div>
-
-        <div className="bg-[#FAFAFA] dark:bg-zinc-900 p-4">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Динамика точности</div>
+          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Средний результат</div>
           <div className="font-serif text-2xl font-normal text-[#0033CC] dark:text-blue-400 mt-1">
-            {accuracyGrowth >= 0 ? `+${accuracyGrowth}%` : `${accuracyGrowth}%`}
+            {avgScore}%
           </div>
           <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-            {hasAnyAttempt ? `Текущая точность: ${avgScore}%` : 'Нет данных'}
+            {hasAnyAttempt ? 'По сданным тестам' : 'Нет данных'}
           </div>
         </div>
 
@@ -165,7 +145,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
             {totalQuestionsSolved} <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">задач</span>
           </div>
           <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-            {currentWeekExercises} за тек. неделю
+            из {totalQuestionsAttempted || totalQuestionsSolved} попыток
           </div>
         </div>
       </div>
@@ -176,168 +156,92 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
             [Информационная панель]
           </div>
           <p className="font-sans text-xs text-zinc-600 dark:text-zinc-400">
-            Вы еще не проходили тесты. Пройдите первый модуль в каталоге уроков, чтобы график и компетенции автоматически заполнились вашими реальными результатами.
+            Вы еще не проходили тесты. Пройдите первый модуль в каталоге уроков, чтобы график автоматически заполнился вашими реальными результатами.
           </p>
         </div>
       )}
 
       {/* Main Chart Rendering Box */}
-      <div className="w-full h-80 pt-2 font-mono text-xs">
-        <ResponsiveContainer width="100%" height="100%">
-          {activeMetric === 'accuracy' ? (
-            <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="accuracyGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0033CC" stopOpacity={0.35} />
-                  <stop offset="95%" stopColor="#0033CC" stopOpacity={0.0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#3F3F46" opacity={0.3} vertical={false} />
-              <XAxis
-                dataKey="weekShort"
-                stroke="#71717A"
-                fontSize={11}
-                tickLine={false}
-                axisLine={{ stroke: '#52525B' }}
-              />
-              <YAxis
-                stroke="#71717A"
-                fontSize={11}
-                domain={[0, 100]}
-                unit="%"
-                tickLine={false}
-                axisLine={{ stroke: '#52525B' }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                wrapperStyle={{ paddingBottom: '16px', fontSize: '11px', fontFamily: 'monospace' }}
-              />
-              <Area
-                type="monotone"
-                dataKey="accuracy"
-                name="Точность ответов (реальная)"
-                unit="%"
-                stroke="#3B82F6"
-                strokeWidth={2.5}
-                fillOpacity={1}
-                fill="url(#accuracyGradient)"
-                activeDot={{ r: 5, fill: '#3B82F6', stroke: '#FFFFFF', strokeWidth: 2 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="passThreshold"
-                name="Порог сдачи (70%)"
-                unit="%"
-                stroke="#71717A"
-                strokeDasharray="4 4"
-                strokeWidth={1.5}
-                dot={false}
-              />
-            </AreaChart>
-          ) : activeMetric === 'volume' ? (
-            <BarChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#3F3F46" opacity={0.3} vertical={false} />
-              <XAxis
-                dataKey="weekShort"
-                stroke="#71717A"
-                fontSize={11}
-                tickLine={false}
-                axisLine={{ stroke: '#52525B' }}
-              />
-              <YAxis
-                stroke="#71717A"
-                fontSize={11}
-                tickLine={false}
-                axisLine={{ stroke: '#52525B' }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                wrapperStyle={{ paddingBottom: '16px', fontSize: '11px', fontFamily: 'monospace' }}
-              />
-              <Bar
-                dataKey="newWords"
-                name="Словарный запас"
-                unit=" слов"
-                fill="#71717A"
-                barSize={18}
-              />
-              <Bar
-                dataKey="exercises"
-                name="Решенные задания"
-                unit=" упр."
-                fill="#3B82F6"
-                barSize={18}
-              />
-            </BarChart>
-          ) : (
-            <LineChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#3F3F46" opacity={0.3} vertical={false} />
-              <XAxis
-                dataKey="weekShort"
-                stroke="#71717A"
-                fontSize={11}
-                tickLine={false}
-                axisLine={{ stroke: '#52525B' }}
-              />
-              <YAxis
-                stroke="#71717A"
-                fontSize={11}
-                unit=" мин"
-                tickLine={false}
-                axisLine={{ stroke: '#52525B' }}
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                wrapperStyle={{ paddingBottom: '16px', fontSize: '11px', fontFamily: 'monospace' }}
-              />
-              <Line
-                type="monotone"
-                dataKey="studyMinutes"
-                name="Время практики"
-                unit=" мин"
-                stroke="#3B82F6"
-                strokeWidth={2.5}
-                dot={{ r: 4, fill: '#3B82F6' }}
-                activeDot={{ r: 6, fill: '#60A5FA', stroke: '#FFFFFF', strokeWidth: 2 }}
-              />
-            </LineChart>
-          )}
+      <div className="w-full h-80 pt-2 font-mono text-xs overflow-x-auto">
+        <ResponsiveContainer width="100%" height="100%" minWidth={600}>
+          <BarChart data={moduleData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#3F3F46" opacity={0.3} vertical={false} />
+            <XAxis
+              dataKey="moduleShort"
+              stroke="#71717A"
+              fontSize={11}
+              tickLine={false}
+              axisLine={{ stroke: '#52525B' }}
+            />
+            <YAxis
+              stroke="#71717A"
+              fontSize={11}
+              domain={[0, 100]}
+              unit="%"
+              tickLine={false}
+              axisLine={{ stroke: '#52525B' }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend
+              verticalAlign="top"
+              align="right"
+              wrapperStyle={{ paddingBottom: '16px', fontSize: '11px', fontFamily: 'monospace' }}
+            />
+            <ReferenceLine
+              y={70}
+              stroke="#EF4444"
+              strokeDasharray="4 4"
+              strokeWidth={1.5}
+              label={{
+                value: 'Порог 70%',
+                position: 'insideTopLeft',
+                fill: '#EF4444',
+                fontSize: 10,
+                fontFamily: 'monospace',
+              }}
+            />
+            <Bar
+              dataKey="scorePercent"
+              name="Результат теста"
+              unit="%"
+              radius={[2, 2, 0, 0]}
+            >
+              {moduleData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={
+                    entry.isPassed
+                      ? '#10B981'
+                      : entry.status === 'failed'
+                      ? '#F59E0B'
+                      : '#71717A'
+                  }
+                  opacity={entry.status === 'not_started' ? 0.35 : 1}
+                />
+              ))}
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Competence Breakdown footer */}
-      <div className="border-t border-zinc-200 dark:border-zinc-800 pt-6">
-        <div className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-3">
-          [Распределение компетенций A1 по реальным ответам]
+      {/* Legend / Status indicator strip */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 bg-emerald-500 inline-block" />
+            <span>Сдано (&ge; 70%)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 bg-amber-500 inline-block" />
+            <span>Не сдан (&lt; 70%)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 bg-zinc-500/40 inline-block" />
+            <span>Не начато</span>
+          </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
-          {competences.map((comp) => (
-            <div key={comp.id} className="p-3 bg-[#FAFAFA] dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-750 flex flex-col justify-between gap-2">
-              <div>
-                <div className="flex justify-between items-center text-[10px] uppercase text-zinc-500 dark:text-zinc-400 mb-1">
-                  <span className="font-bold text-zinc-800 dark:text-zinc-200">{comp.title}</span>
-                  <span className={`font-bold ${comp.hasData ? 'text-[#0033CC] dark:text-blue-400' : 'text-zinc-400 dark:text-zinc-600'}`}>
-                    {comp.hasData ? `${comp.accuracy}%` : '0%'}
-                  </span>
-                </div>
-                <div className="w-full bg-zinc-200 dark:bg-zinc-700 h-1 mt-1">
-                  <div
-                    className="bg-[#0033CC] dark:bg-blue-500 h-1 transition-all duration-300"
-                    style={{ width: comp.hasData ? `${comp.accuracy}%` : '0%' }}
-                  />
-                </div>
-              </div>
-              <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-sans leading-tight">
-                {comp.description}
-              </div>
-            </div>
-          ))}
+        <div className="text-[10px] text-zinc-400">
+          M01–M12: Ступень A1.1 • M13–M24: Ступень A1.2
         </div>
       </div>
     </div>

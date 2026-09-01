@@ -1,19 +1,44 @@
 import React, { useState, useMemo } from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, BookOpen } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { WeeklyProgressCharts } from './WeeklyProgressCharts';
 import { calculateRealAnalytics, RealAnalyticsSummary } from '../utils/analytics';
 import { LESSONS_DATA } from '../data/lessonsData';
+import { WORTSCHATZ_DATA } from '../data/wortschatzData';
 
 interface ProfileViewProps {
   onStartLesson?: (lessonId: string) => void;
+  onOpenWortschatz?: (sectionId?: number) => void;
 }
 
-export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson }) => {
+interface WortschatzProgressRecord {
+  scorePercent: number;
+  correctAnswers: number;
+  totalQuestions: number;
+  passed: boolean;
+  completedAt: string;
+  attemptsCount: number;
+}
+
+export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenWortschatz }) => {
   const { profile, progress, isAdmin, isEmailVerified, sendVerificationEmail, checkEmailVerification } = useAuth();
   const [resending, setResending] = useState(false);
   const [checking, setChecking] = useState(false);
   const [statusNotice, setStatusNotice] = useState<string | null>(null);
+  const [journalTab, setJournalTab] = useState<'a1' | 'wortschatz'>('a1');
+
+  const wortschatzProgress: Record<number, WortschatzProgressRecord> = useMemo(() => {
+    try {
+      const saved = localStorage.getItem('delfi_wortschatz_progress');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  }, []);
+
+  const wortschatzPassedCount = useMemo(() => {
+    return Object.values(wortschatzProgress).filter((p) => p?.passed).length;
+  }, [wortschatzProgress]);
 
   const analytics: RealAnalyticsSummary = useMemo(() => {
     return calculateRealAnalytics(profile, progress);
@@ -202,105 +227,231 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson }) => {
             [Журнал результатов • Реальный прогресс по модулям]
           </div>
           <h2 className="font-serif text-2xl md:text-3xl text-zinc-950 dark:text-white font-normal">
-            Анализ прохождения модулей A1
+            {journalTab === 'a1' ? 'Анализ прохождения модулей A1' : 'Анализ прохождения модулей словаря'}
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans mt-1">
-            Детальный отчет по всем 21 уроку курса Goethe A1 с реальными результатами и количеством попыток.
+            {journalTab === 'a1'
+              ? `Детальный отчет по всем ${LESSONS_DATA.length} урокам курса Goethe A1 с реальными результатами и количеством попыток.`
+              : `Детальный отчет по всем ${WORTSCHATZ_DATA.sections.length} тематическим секциям словаря (550 слов) с результатами проверочных тестов.`}
           </p>
         </div>
 
-        <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800">
-          <table className="w-full font-mono text-xs text-left border-collapse">
-            <thead className="bg-[#F4F4F5] dark:bg-zinc-800 text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 border-b border-zinc-300 dark:border-zinc-700">
-              <tr>
-                <th className="p-3">Модуль</th>
-                <th className="p-3">Тема урока</th>
-                <th className="p-3">Статус</th>
-                <th className="p-3 text-center">Точность</th>
-                <th className="p-3 text-center">Попытки</th>
-                <th className="p-3 text-right">Дата сдачи</th>
-                {onStartLesson && <th className="p-3 text-right">Действие</th>}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-              {lessonDetails.map(({ lesson, progress: prog, status }) => {
-                const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
-                const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
+        {/* Journal Tab Switcher */}
+        <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3 flex-wrap">
+          <button
+            id="journal-tab-a1"
+            type="button"
+            onClick={() => setJournalTab('a1')}
+            className={`px-4 py-2 font-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer border ${
+              journalTab === 'a1'
+                ? 'bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 border-zinc-950 dark:border-white shadow-xs'
+                : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700'
+            }`}
+          >
+            Анализ прохождения модулей А1 ({passedLessonsCount}/{totalLessonsCount})
+          </button>
 
-                return (
-                  <tr key={lesson.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors">
-                    <td className="p-3 font-bold text-zinc-950 dark:text-white shrink-0">
-                      №{lesson.number.toString().padStart(2, '0')}
-                    </td>
-                    <td className="p-3 font-sans">
-                      <div className="font-bold text-zinc-950 dark:text-white">{lesson.titleRu}</div>
-                      <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">{lesson.titleDe}</div>
-                    </td>
-                    <td className="p-3 whitespace-nowrap">
-                      {status === 'passed' ? (
-                        <span className="px-2 py-0.5 bg-zinc-950 dark:bg-emerald-950 text-white dark:text-emerald-300 font-bold text-[10px] uppercase border border-zinc-950 dark:border-emerald-800">
-                          [Сдано]
-                        </span>
-                      ) : status === 'failed' ? (
-                        <span className="px-2 py-0.5 bg-zinc-100 dark:bg-rose-950/50 text-zinc-900 dark:text-rose-300 border border-zinc-400 dark:border-rose-800 text-[10px] font-bold uppercase">
-                          [Не сдано]
-                        </span>
-                      ) : (
-                        <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] uppercase">
-                          [Не начат]
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-3 text-center font-bold">
-                      {prog ? (
-                        <span className={prog.scorePercent >= lesson.passThreshold ? 'text-[#0033CC] dark:text-blue-400' : 'text-zinc-800 dark:text-zinc-300'}>
-                          {prog.scorePercent}%
-                        </span>
-                      ) : (
-                        <span className="text-zinc-300 dark:text-zinc-600">—</span>
-                      )}
-                    </td>
-                    <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">
-                      {prog?.attemptsCount || 0}
-                    </td>
-                    <td className="p-3 text-right text-zinc-500 dark:text-zinc-400 whitespace-nowrap text-[11px]">
-                      {prog?.completedAt ? new Date(prog.completedAt).toLocaleDateString('ru-RU') : '—'}
-                    </td>
-                    {onStartLesson && (
-                      <td className="p-3 text-right whitespace-nowrap">
-                        {lesson.isComingSoon ? (
-                          <button
-                            disabled
-                            className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] font-mono uppercase cursor-not-allowed"
-                          >
-                            Скоро
-                          </button>
-                        ) : !isUnlocked ? (
-                          <button
-                            disabled
-                            title={`Модуль #${lesson.number} заблокирован. Для доступа сначала пройдите Модуль #${lesson.number - 1}`}
-                            className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] font-mono uppercase cursor-not-allowed flex items-center gap-1.5 ml-auto"
-                          >
-                            <Lock size={11} className="shrink-0 text-zinc-400 dark:text-zinc-500" />
-                            <span>Заблокирован</span>
-                          </button>
+          <button
+            id="journal-tab-wortschatz"
+            type="button"
+            onClick={() => setJournalTab('wortschatz')}
+            className={`px-4 py-2 font-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer border ${
+              journalTab === 'wortschatz'
+                ? 'bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 border-zinc-950 dark:border-white shadow-xs'
+                : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700'
+            }`}
+          >
+            Анализ прохождения модулей словаря ({wortschatzPassedCount}/{WORTSCHATZ_DATA.sections.length})
+          </button>
+        </div>
+
+        {/* Tab 1: A1 Course Modules Table */}
+        {journalTab === 'a1' && (
+          <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800">
+            <table className="w-full font-mono text-xs text-left border-collapse">
+              <thead className="bg-[#F4F4F5] dark:bg-zinc-800 text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 border-b border-zinc-300 dark:border-zinc-700">
+                <tr>
+                  <th className="p-3">Модуль</th>
+                  <th className="p-3">Тема урока</th>
+                  <th className="p-3">Статус</th>
+                  <th className="p-3 text-center">Точность</th>
+                  <th className="p-3 text-center">Попытки</th>
+                  <th className="p-3 text-right">Дата сдачи</th>
+                  {onStartLesson && <th className="p-3 text-right">Действие</th>}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                {lessonDetails.map(({ lesson, progress: prog, status }) => {
+                  const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
+                  const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
+
+                  return (
+                    <tr key={lesson.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors">
+                      <td className="p-3 font-bold text-zinc-950 dark:text-white shrink-0">
+                        №{lesson.number.toString().padStart(2, '0')}
+                      </td>
+                      <td className="p-3 font-sans">
+                        <div className="font-bold text-zinc-950 dark:text-white">{lesson.titleRu}</div>
+                        <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">{lesson.titleDe}</div>
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        {status === 'passed' ? (
+                          <span className="px-2 py-0.5 bg-zinc-950 dark:bg-emerald-950 text-white dark:text-emerald-300 font-bold text-[10px] uppercase border border-zinc-950 dark:border-emerald-800">
+                            [Сдано]
+                          </span>
+                        ) : status === 'failed' ? (
+                          <span className="px-2 py-0.5 bg-zinc-100 dark:bg-rose-950/50 text-zinc-900 dark:text-rose-300 border border-zinc-400 dark:border-rose-800 text-[10px] font-bold uppercase">
+                            [Не сдано]
+                          </span>
                         ) : (
+                          <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] uppercase">
+                            [Не начат]
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center font-bold">
+                        {prog ? (
+                          <span className={prog.scorePercent >= lesson.passThreshold ? 'text-[#0033CC] dark:text-blue-400' : 'text-zinc-800 dark:text-zinc-300'}>
+                            {prog.scorePercent}%
+                          </span>
+                        ) : (
+                          <span className="text-zinc-300 dark:text-zinc-600">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">
+                        {prog?.attemptsCount || 0}
+                      </td>
+                      <td className="p-3 text-right text-zinc-500 dark:text-zinc-400 whitespace-nowrap text-[11px]">
+                        {prog?.completedAt ? new Date(prog.completedAt).toLocaleDateString('ru-RU') : '—'}
+                      </td>
+                      {onStartLesson && (
+                        <td className="p-3 text-right whitespace-nowrap">
+                          {lesson.isComingSoon ? (
+                            <button
+                              disabled
+                              className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] font-mono uppercase cursor-not-allowed"
+                            >
+                              Скоро
+                            </button>
+                          ) : !isUnlocked ? (
+                            <button
+                              disabled
+                              title={`Модуль #${lesson.number} заблокирован. Для доступа сначала пройдите Модуль #${lesson.number - 1}`}
+                              className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] font-mono uppercase cursor-not-allowed flex items-center gap-1.5 ml-auto"
+                            >
+                              <Lock size={11} className="shrink-0 text-zinc-400 dark:text-zinc-500" />
+                              <span>Заблокирован</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => onStartLesson(lesson.id)}
+                              className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-white text-[10px] uppercase font-bold tracking-wider cursor-pointer font-mono"
+                            >
+                              {prog ? 'Повторить' : 'Пройти'}
+                            </button>
+                          )}
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Tab 2: Wortschatz (Vocabulary) Modules Table */}
+        {journalTab === 'wortschatz' && (
+          <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800">
+            <table className="w-full font-mono text-xs text-left border-collapse">
+              <thead className="bg-[#F4F4F5] dark:bg-zinc-800 text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 border-b border-zinc-300 dark:border-zinc-700">
+                <tr>
+                  <th className="p-3">Тема</th>
+                  <th className="p-3">Лексическая тема</th>
+                  <th className="p-3">Уровень</th>
+                  <th className="p-3">Статус</th>
+                  <th className="p-3 text-center">Точность</th>
+                  <th className="p-3 text-center">Правильно</th>
+                  <th className="p-3 text-center">Попытки</th>
+                  <th className="p-3 text-right">Дата сдачи</th>
+                  {onOpenWortschatz && <th className="p-3 text-right">Действие</th>}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                {WORTSCHATZ_DATA.sections.map((section) => {
+                  const prog = wortschatzProgress[section.section_id];
+                  const isPassed = prog?.passed;
+                  const isFailed = !isPassed && (prog?.attemptsCount || 0) > 0;
+                  const levelTag = section.section_id <= 6 ? 'A1.1' : 'A1.2';
+
+                  return (
+                    <tr key={section.section_id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors">
+                      <td className="p-3 font-bold text-zinc-950 dark:text-white shrink-0">
+                        №{section.section_id.toString().padStart(2, '0')}
+                      </td>
+                      <td className="p-3 font-sans">
+                        <div className="font-bold text-zinc-950 dark:text-white">{section.title_ru}</div>
+                        <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
+                          {section.title_de} • {section.word_count} слов
+                        </div>
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 text-[10px] font-bold uppercase">
+                          {levelTag}
+                        </span>
+                      </td>
+                      <td className="p-3 whitespace-nowrap">
+                        {isPassed ? (
+                          <span className="px-2 py-0.5 bg-zinc-950 dark:bg-emerald-950 text-white dark:text-emerald-300 font-bold text-[10px] uppercase border border-zinc-950 dark:border-emerald-800">
+                            [Сдано]
+                          </span>
+                        ) : isFailed ? (
+                          <span className="px-2 py-0.5 bg-zinc-100 dark:bg-rose-950/50 text-zinc-900 dark:text-rose-300 border border-zinc-400 dark:border-rose-800 text-[10px] font-bold uppercase">
+                            [Не сдано]
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] uppercase">
+                            [Не начат]
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center font-bold">
+                        {prog ? (
+                          <span className={prog.scorePercent >= 70 ? 'text-[#0033CC] dark:text-blue-400' : 'text-zinc-800 dark:text-zinc-300'}>
+                            {prog.scorePercent}%
+                          </span>
+                        ) : (
+                          <span className="text-zinc-300 dark:text-zinc-600">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">
+                        {prog ? `${prog.correctAnswers} / ${prog.totalQuestions}` : `—`}
+                      </td>
+                      <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">
+                        {prog?.attemptsCount || 0}
+                      </td>
+                      <td className="p-3 text-right text-zinc-500 dark:text-zinc-400 whitespace-nowrap text-[11px]">
+                        {prog?.completedAt ? new Date(prog.completedAt).toLocaleDateString('ru-RU') : '—'}
+                      </td>
+                      {onOpenWortschatz && (
+                        <td className="p-3 text-right whitespace-nowrap">
                           <button
                             type="button"
-                            onClick={() => onStartLesson(lesson.id)}
+                            onClick={() => onOpenWortschatz(section.section_id)}
                             className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-white text-[10px] uppercase font-bold tracking-wider cursor-pointer font-mono"
                           >
                             {prog ? 'Повторить' : 'Пройти'}
                           </button>
-                        )}
-                      </td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Activity Matrix (30 Days) */}

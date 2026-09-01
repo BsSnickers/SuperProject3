@@ -106,3 +106,48 @@ export interface HandbookSection {
     ru: string;
   }[];
 }
+
+export interface WortschatzItem {
+  de: string;
+  ru: string;
+}
+
+export interface WortschatzQuizQuestion {
+  id: string;
+  direction: 'de_to_ru' | 'ru_to_de';
+  prompt: string;
+  options: string[];
+  correct_answer: string;
+}
+
+export interface WortschatzSection {
+  section_id: number;
+  title_de: string;
+  title_ru: string;
+  word_count: number;
+  vocabulary: WortschatzItem[];
+  quiz: WortschatzQuizQuestion[];
+}
+
+export interface WortschatzMeta {
+  course: string;
+  description: string;
+  total_sections: number;
+  total_words: number;
+}
+
+export interface WortschatzData {
+  meta: WortschatzMeta;
+  sections: WortschatzSection[];
+}
+
+export interface WortschatzSectionProgress {
+  sectionId: number;
+  scorePercent: number;
+  correctAnswers: number;
+  totalQuestions: number;
+  passed: boolean;
+  completedAt: string;
+  attemptsCount: number;
+}
+

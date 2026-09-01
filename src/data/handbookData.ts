@@ -30,9 +30,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Формы для wir и вежливого Sie всегда совпадают с инфинитивом глагола.',
     ],
     examples: [
-      { de: 'Ich lerne fleißig Deutsch für mein Au-Pair-Jahr.', ru: 'Я усердно учу немецкий язык для моего года Au-Pair.' },
-      { de: 'Wo wohnen Sie zurzeit in Deutschland?', ru: 'Где Вы сейчас живете в Германии?' },
-      { de: 'Mein Bruder arbeitet als Krankenpfleger.', ru: 'Мой брат работает медбратом.' },
+      { de: 'Ich lerne jeden Tag Deutsch und wohne in Berlin.', ru: 'Я каждый день учу немецкий и живу в Берлине.' },
+      { de: 'Wo wohnst du? — Ich wohne in München.', ru: 'Где ты живешь? — Я живу в Мюнхене.' },
+      { de: 'Mein Bruder arbeitet in einem Büro.', ru: 'Мой брат работает в офисе.' },
     ],
   },
 
@@ -65,9 +65,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Глагол nehmen меняется на du nimmst, er nimmt (e → i с удвоением m).',
     ],
     examples: [
-      { de: 'Sprichst du schon gut Deutsch?', ru: 'Ты уже хорошо говоришь по-немецки?' },
-      { de: 'Er fährt morgen früh nach Berlin.', ru: 'Он едет завтра утром в Берлин.' },
-      { de: 'Die Gastmutter hilft mir bei den Papieren.', ru: 'Принимающая мама помогает мне с документами.' },
+      { de: 'Sprichst du Deutsch? — Ja, ich spreche ein bisschen Deutsch.', ru: 'Ты говоришь по-немецки? — Да, я говорю немного по-немецки.' },
+      { de: 'Fährst du mit dem Bus oder nimmst du das Fahrrad?', ru: 'Ты едешь на автобусе или берешь велосипед?' },
+      { de: 'Er liest gern Bücher und hilft mir oft.', ru: 'Он охотно читает книги и часто помогает мне.' },
     ],
   },
 
@@ -100,9 +100,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'После глагола haben всегда используется Akkusativ: «Ich habe einen Vertrag».',
     ],
     examples: [
-      { de: 'Ich bin pünktlich und zuverlässig.', ru: 'Я пунктуален и надежен.' },
-      { de: 'Ich habe alle Unterlagen für das Visum dabei.', ru: 'У меня с собой все документы для визы.' },
-      { de: 'Wir sind sehr glücklich über die Zusage.', ru: 'Мы очень счастливы получить подтверждение.' },
+      { de: 'Ich bin Anna und ich bin 20 Jahre alt.', ru: 'Я Анна, и мне 20 лет.' },
+      { de: 'Hast du heute Zeit? — Ja, ich habe Zeit.', ru: 'У тебя есть сегодня время? — Да, у меня есть время.' },
+      { de: 'Wir sind müde, aber wir sind sehr glücklich.', ru: 'Мы устали, но мы очень счастливы.' },
     ],
   },
 
@@ -133,9 +133,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Учите каждое существительное строго с его артиклем (der Tisch, die Lampe, das Buch).',
     ],
     examples: [
-      { de: 'Das ist ein Visumantrag. Der Antrag ist vollständig.', ru: 'Это визовая анкета. Анкета заполнена полностью.' },
-      { de: 'Ich habe leider keine Zeit heute.', ru: 'К сожалению, у меня нет времени сегодня.' },
-      { de: 'Er hat keinen deutschen Führerschein.', ru: 'У него нет немецких водительских прав.' },
+      { de: 'Das ist ein Tisch. Der Tisch ist neu und groß.', ru: 'Это стол. Стол новый и большой.' },
+      { de: 'Hast du ein Auto? — Nein, ich habe kein Auto.', ru: 'У тебя есть машина? — Нет, у меня нет машины.' },
+      { de: 'Das sind keine Äpfel, das sind Orangen.', ru: 'Это не яблоки, это апельсины.' },
     ],
   },
 
@@ -165,9 +165,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Мужской род — единственный, кто получает суффикс -en (den, einen, meinen, deinen, keinen).',
     ],
     examples: [
-      { de: 'Ich brauche einen neuen Reisepass.', ru: 'Мне нужен новый загранпаспорт.' },
-      { de: 'Sie sucht den Bahnhof.', ru: 'Она ищет вокзал.' },
-      { de: 'Ich habe meinen Lebenslauf ausgedruckt.', ru: 'Я распечатал свое резюме.' },
+      { de: 'Ich trinke morgens einen Kaffee und esse einen Apfel.', ru: 'Утром я пью кофе и ем яблоко.' },
+      { de: 'Brauchst du einen Stift? — Ja, ich suche meinen Stift.', ru: 'Тебе нужна ручка? — Да, я ищу свою ручку.' },
+      { de: 'Ich kenne diesen Mann und diese Frau gut.', ru: 'Я хорошо знаю этого мужчину и эту женщину.' },
     ],
   },
 
@@ -197,9 +197,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Глаголы, требующие Dativ: helfen (помогать), danken (благодарить), gefallen (нравиться), gehören (принадлежать), schmecken (быть по вкусу), antworten (отвечать).',
     ],
     examples: [
-      { de: 'Ich helfe der Gastmutter beim Kochen.', ru: 'Я помогаю принимающей маме с готовкой.' },
-      { de: 'Das Zimmer gefällt dem Schüler sehr.', ru: 'Комната очень нравится ученику.' },
-      { de: 'Wir danken den Lehrern für die Unterstützung.', ru: 'Мы благодарим учителей за поддержку.' },
+      { de: 'Wie geht es dir? — Danke, mir geht es sehr gut!', ru: 'Как твои дела? — Спасибо, у меня все отлично!' },
+      { de: 'Ich helfe meiner Mutter in der Küche.', ru: 'Я помогаю моей маме на кухне.' },
+      { de: 'Das Essen schmeckt den Kindern sehr gut.', ru: 'Еда очень нравится детям (по вкусу).' },
     ],
   },
 
@@ -234,9 +234,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Слияния предлогов с артиклями: in + das = ins; in + dem = im; an + das = ans; an + dem = am; auf + das = aufs.',
     ],
     examples: [
-      { de: 'Wohin gehst du? — Ich gehe in die Sprachschule.', ru: 'Куда ты идешь? — Я иду в языковую школу (Akkusativ).' },
-      { de: 'Wo bist du jetzt? — Ich bin in der Sprachschule.', ru: 'Где ты сейчас? — Я в языковой школе (Dativ).' },
-      { de: 'Ich lege den Pass auf den Schreibtisch.', ru: 'Я кладу паспорт на письменный стол.' },
+      { de: 'Wohin gehst du? — Ich gehe in den Park.', ru: 'Куда ты идешь? — Я иду в парк (куда? Akkusativ).' },
+      { de: 'Wo bist du jetzt? — Ich bin im Park.', ru: 'Где ты сейчас? — Я в парке (где? Dativ).' },
+      { de: 'Ich lege das Buch auf den Tisch. Das Buch liegt auf dem Tisch.', ru: 'Я кладу книгу на стол. Книга лежит на столе.' },
     ],
   },
 
@@ -264,9 +264,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Если в предложении есть модальный глагол, отделяемый глагол идет в конец целиком в инфинитиве: «Ich muss um 7 Uhr aufstehen».',
     ],
     examples: [
-      { de: 'Der Zug kommt um 15:30 Uhr in Frankfurt an.', ru: 'Поезд прибывает во Франкфурт в 15:30 (ankommen).' },
-      { de: 'Kommst du zur Party mit?', ru: 'Ты пойдешь с нами на вечеринку? (mitkommen).' },
-      { de: 'Der Botschaftsbeamte erklärt die Regeln.', ru: 'Сотрудник посольства объясняет правила (erklären).' },
+      { de: 'Ich stehe jeden Tag um sieben Uhr auf.', ru: 'Я встаю каждый день в семь часов утра (aufstehen).' },
+      { de: 'Kaufst du heute im Supermarkt ein? — Ja, ich kaufe Milch ein.', ru: 'Ты закупаешься сегодня в супермаркете? — Да, я покупаю молоко (einkaufen).' },
+      { de: 'Ich verstehe den Satz nicht. Bitte erklären Sie das Wort!', ru: 'Я не понимаю это предложение. Пожалуйста, объясните это слово! (verstehen / erklären).' },
     ],
   },
 
@@ -298,9 +298,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Рамочная конструкция: «Ich [muss] morgen früh zum Konsulat [gehen]».',
     ],
     examples: [
-      { de: 'Ich kann gut mit kleinen Kindern umgehen.', ru: 'Я умею хорошо ладить с маленькими детьми.' },
-      { de: 'Hier darf man nicht rauchen.', ru: 'Здесь нельзя курить (запрещено).' },
-      { de: 'Ich möchte in Deutschland eine Ausbildung machen.', ru: 'Я хотел бы пройти дуальное обучение в Германии.' },
+      { de: 'Kannst du Deutsch sprechen? — Ja, ich kann gut Deutsch sprechen.', ru: 'Ты умеешь говорить по-немецки? — Да, я могу хорошо говорить по-немецки.' },
+      { de: 'Hier darf man nicht laut Musik hören.', ru: 'Здесь нельзя громко слушать музыку (запрещено).' },
+      { de: 'Ich möchte einen Kaffee trinken und wir müssen jetzt lernen.', ru: 'Я хотел бы выпить кофе, и нам нужно сейчас учиться.' },
     ],
   },
 
@@ -331,9 +331,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Для вежливости добавляйте частицу bitte: «Kommen Sie bitte herein!»',
     ],
     examples: [
-      { de: 'Pass bitte gut auf die Kinder auf!', ru: 'Присмотри, пожалуйста, внимательно за детьми!' },
-      { de: 'Unterschreiben Sie den Vertrag hier, bitte.', ru: 'Подпишите, пожалуйста, договор здесь.' },
-      { de: 'Sei pünktlich zum Deutschunterricht!', ru: 'Будь вовремя на уроке немецкого!' },
+      { de: 'Komm bitte schnell hierher und hilf mir!', ru: 'Приходи, пожалуйста, скорее сюда и помоги мне! (du)' },
+      { de: 'Kinder, macht bitte die Bücher auf und lernt fleißig!', ru: 'Дети, откройте, пожалуйста, книги и учитесь старательно! (ihr)' },
+      { de: 'Sprechen Sie bitte etwas langsamer!', ru: 'Говорите, пожалуйста, немного медленнее! (Sie)' },
     ],
   },
 
@@ -365,9 +365,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Viertel vor = без четверти; Viertel nach = четверть после: «Viertel nach zehn» = 10:15.',
     ],
     examples: [
-      { de: 'Mein Termin in der Botschaft ist am Dienstag um 10:30 Uhr.', ru: 'Мой термин в посольстве во вторник в 10:30.' },
-      { de: 'Ich habe Geburtstag am ersten Mai.', ru: 'У меня день рождения первого мая.' },
-      { de: 'Der Sprachkurs dauert von Oktober bis März.', ru: 'Языковой курс длится с октября по март.' },
+      { de: 'Wie spät ist es? — Es ist genau halb drei (14:30 Uhr).', ru: 'Который час? — Ровно половина третьего (14:30).' },
+      { de: 'Am Montag um zehn Uhr habe ich einen Deutschkurs.', ru: 'В понедельник в десять часов у меня урок немецкого.' },
+      { de: 'Mein Geburtstag ist am fünfzehnten Juli.', ru: 'Мой день рождения пятнадцатого июля.' },
     ],
   },
 
@@ -398,9 +398,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Глаголы движения и смены состояния ВСЕГДА требуют sein: «Ich bin angekommen», «Ich bin aufgewacht».',
     ],
     examples: [
-      { de: 'Ich habe meinen Au-Pair-Vertrag gestern unterschrieben.', ru: 'Я вчера подписал свой контракт Au-Pair.' },
-      { de: 'Wir sind pünktlich am Flughafen angekommen.', ru: 'Мы вовремя прибыли в аэропорт.' },
-      { de: 'Was hast du heute Schönes gemacht?', ru: 'Что хорошего ты сегодня делал?' },
+      { de: 'Ich habe gestern Deutsch gelernt und Musik gehört.', ru: 'Вчера я учил немецкий и слушал музыку (haben + gelernt).' },
+      { de: 'Wir sind heute um acht Uhr nach Berlin gefahren.', ru: 'Мы сегодня в восемь часов поехали в Берлин (sein + gefahren).' },
+      { de: 'Was hast du heute zum Frühstück gegessen?', ru: 'Что ты сегодня ел на завтрак? (haben + gegessen).' },
     ],
   },
 
@@ -433,9 +433,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Популярные возвратные глаголы A1: sich freuen auf/über, sich interessieren für, sich fühlen, sich treffen, sich vorstellen.',
     ],
     examples: [
-      { de: 'Ich freue mich sehr auf mein neues Leben in Deutschland.', ru: 'Я очень радуюсь своей новой жизни в Германии.' },
-      { de: 'Wie fühlst du dich heute nach der Reise?', ru: 'Как ты себя чувствуешь сегодня после поездки?' },
-      { de: 'Ich wasche mir schnell das Gesicht.', ru: 'Я быстро умою (себе) лицо.' },
+      { de: 'Ich stehe auf und wasche mich jeden Morgen.', ru: 'Я встаю и умываюсь каждое утро.' },
+      { de: 'Wie fühlst du dich heute? — Ich fühle mich gut!', ru: 'Как ты себя чувствуешь сегодня? — Я чувствую себя хорошо!' },
+      { de: 'Ich wasche mir vor dem Essen die Hände.', ru: 'Я мою себе руки перед едой.' },
     ],
   },
 
@@ -468,9 +468,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Вежливая форма Ihr / Ihre / Ihren всегда пишется с большой буквы.',
     ],
     examples: [
-      { de: 'Ist das Ihre aktuelle E-Mail-Adresse?', ru: 'Это Ваш актуальный адрес электронной почты?' },
-      { de: 'Ich habe meinen Ausbildungsvertrag per Post erhalten.', ru: 'Я получил свой контракт на Ausbildung по почте.' },
-      { de: 'Unsere Gastfamilie wohnt in München.', ru: 'Наша принимающая семья живет в Мюнхене.' },
+      { de: 'Das ist mein Bruder und das ist meine Schwester.', ru: 'Это мой брат, а это моя сестра.' },
+      { de: 'Wo ist dein Pass? — Mein Pass liegt in meiner Tasche.', ru: 'Где твой паспорт? — Мой паспорт лежит в моей сумке.' },
+      { de: 'Unsere Wohnung ist sehr schön und hell.', ru: 'Наша квартира очень красивая и светлая.' },
     ],
   },
 
@@ -504,9 +504,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Запомните пару: er → ihn (Akk) / ihm (Dat); sie → sie (Akk) / ihr (Dat).',
     ],
     examples: [
-      { de: 'Können Sie mir bitte helfen?', ru: 'Не могли бы Вы мне помочь?' },
-      { de: 'Ich rufe dich heute Abend an.', ru: 'Я позвоню тебе сегодня вечером.' },
-      { de: 'Der Schulleiter hat ihm den Ausbildungsplatz angeboten.', ru: 'Директор школы предложил ему место на обучении.' },
+      { de: 'Können Sie mir bitte helfen? — Ja, ich helfe Ihnen gern!', ru: 'Вы можете мне помочь? — Да, я с удовольствием помогу Вам!' },
+      { de: 'Kennst du ihn? — Ja, ich sehe ihn jeden Tag in der Schule.', ru: 'Ты знаешь его? — Да, я вижу его каждый день в школе.' },
+      { de: 'Ich rufe dich heute Abend um acht Uhr an.', ru: 'Я позвоню тебе сегодня вечером в восемь часов.' },
     ],
   },
 
@@ -540,9 +540,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Слияния: bei + dem = beim; von + dem = vom; zu + dem = zum; zu + der = zur.',
     ],
     examples: [
-      { de: 'Ich fahre jeden Morgen mit dem Bus zur Arbeit.', ru: 'Каждое утро я еду на автобусе на работу.' },
-      { de: 'Ich lerne seit drei Monaten intensiv Deutsch.', ru: 'Я уже три месяца интенсивно учу немецкий.' },
-      { de: 'Morgen gehe ich zum Vorstellungsgespräch.', ru: 'Завтра я иду на собеседование.' },
+      { de: 'Ich fahre jeden Tag mit dem Bus zur Schule.', ru: 'Я каждый день еду на автобусе в школу (mit dem Bus / zu der Schule).' },
+      { de: 'Ich wohne seit zwei Monaten bei meiner Familie.', ru: 'Я уже два месяца живу у своей семьи (seit / bei).' },
+      { de: 'Nach dem Unterricht gehe ich nach Hause.', ru: 'После занятий я иду домой (nach dem Unterricht).' },
     ],
   },
 
@@ -575,9 +575,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'После ohne существительное во множественном числе или без артикля употребляется в чистом виде: «ohne Probleme», «ohne Geld».',
     ],
     examples: [
-      { de: 'Dieses Zertifikat ist sehr wichtig für mein Visum.', ru: 'Этот сертификат очень важен для моей визы.' },
-      { de: 'Ohne ein gültiges Sprachzertifikat kann man kein Visum beantragen.', ru: 'Без действующего языкового сертификата нельзя подать на визу.' },
-      { de: 'Wir treffen uns gegen 19:00 Uhr.', ru: 'Мы встретимся около 19:00.' },
+      { de: 'Das Geschenk hier ist für meinen Freund.', ru: 'Этот подарок здесь — для моего друга (für meinen Freund).' },
+      { de: 'Ich trinke meinen Tee immer ohne Zucker.', ru: 'Я всегда пью свой чай без сахара (ohne Zucker).' },
+      { de: 'Wir gehen am Nachmittag durch den Park.', ru: 'Во второй половине дня мы идем через парк (durch den Park).' },
     ],
   },
 
@@ -610,9 +610,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Никогда не говорите «Ich gehe zu Hause» — правильно «Ich gehe nach Hause»!',
     ],
     examples: [
-      { de: 'In zwei Monaten fliege ich nach Deutschland.', ru: 'Через два месяца я улетаю в Германию.' },
-      { de: 'Nach dem Vorstellungsgespräch war ich sehr erleichtert.', ru: 'После собеседования я почувствовал огромное облегчение.' },
-      { de: 'Am Wochenende bin ich meistens zu Hause.', ru: 'На выходных я в основном дома.' },
+      { de: 'Ich gehe jetzt nach Hause. Bist du auch zu Hause?', ru: 'Я иду сейчас домой. Ты тоже дома?' },
+      { de: 'Am Samstag schlafe ich lange und frühstücke um zehn Uhr.', ru: 'В субботу я долго сплю и завтракаю в десять часов.' },
+      { de: 'In zwei Wochen fahre ich nach Deutschland.', ru: 'Через две недели я еду в Германию.' },
     ],
   },
 
@@ -645,9 +645,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Если на первое место выносится время («Morgen...»), подлежащее сразу переходит на 3-е место («Morgen fahre ich...»).',
     ],
     examples: [
-      { de: 'Ich möchte in Deutschland arbeiten, denn ich mag die Sprache.', ru: 'Я хочу работать в Германии, так как мне нравится язык.' },
-      { de: 'Morgen habe ich frei, aber ich lerne trotzdem Grammatik.', ru: 'Завтра у меня выходной, но я все равно учу грамматику.' },
-      { de: 'Wir fliegen nicht nach München, sondern wir fahren nach Berlin.', ru: 'Мы летим не в Мюнхен, а едем в Берлин.' },
+      { de: 'Ich lerne fleißig Deutsch, denn ich fahre bald nach Deutschland.', ru: 'Я старательно учу немецкий, так как скоро еду в Германию.' },
+      { de: 'Heute habe ich keine Zeit, aber morgen treffe ich meine Freunde.', ru: 'Сегодня у меня нет времени, но завтра я встречаюсь с друзьями.' },
+      { de: 'Wir fahren nicht mit dem Auto, sondern wir nehmen den Zug.', ru: 'Мы едем не на машине, а берем поезд.' },
     ],
   },
 
@@ -678,9 +678,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Разница denn vs weil: denn не меняет порядок слов (глагол на 2 месте), weil отправляет глагол в самый конец: «..., denn ich lerne» vs «..., weil ich lerne».',
     ],
     examples: [
-      { de: 'Ich bin glücklich, weil ich die Zusage bekommen habe.', ru: 'Я счастлив, потому что получил подтверждение о приеме.' },
-      { de: 'Mein Lehrer sagt, dass ich große Fortschritte mache.', ru: 'Мой преподаватель говорит, что я делаю большие успехи.' },
-      { de: 'Wenn Sie Fragen haben, rufen Sie mich bitte an.', ru: 'Если у Вас возникнут вопросы, пожалуйста, позвоните мне.' },
+      { de: 'Ich lerne jeden Tag Deutsch, weil ich die Sprache mag.', ru: 'Я каждый день учу немецкий, потому что мне нравится язык.' },
+      { de: 'Mein Freund sagt, dass Deutschlernen viel Spaß macht.', ru: 'Мой друг говорит, что учить немецкий очень весело.' },
+      { de: 'Wenn das Wetter schön ist, gehen wir im Park spazieren.', ru: 'Если погода хорошая, мы идем гулять в парк.' },
     ],
   },
 
@@ -714,9 +714,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Союз so ... wie используется при равенстве («Er ist so fleißig wie sein Bruder»).',
     ],
     examples: [
-      { de: 'Deutsch sprechen ist mir lieber als Texte schreiben.', ru: 'Говорить по-немецки мне приятнее, чем писать тексты.' },
-      { de: 'Dieser Sprachkurs ist der beste für die Vorbereitung.', ru: 'Этот языковой курс — самый лучший для подготовки.' },
-      { de: 'Meine Gastkinder sind älter als ich dachte.', ru: 'Дети в семье старше, чем я думал.' },
+      { de: 'Tee schmeckt gut, aber Kaffee ist besser.', ru: 'Чай вкусный, но кофе лучше (gut → besser).' },
+      { de: 'Mein Bruder ist größer und älter als ich.', ru: 'Мой брат выше и старше меня (groß → größer, alt → älter).' },
+      { de: 'Im Juli und August ist es in Deutschland am wärmsten.', ru: 'В июле и августе в Германии теплее всего (am wärmsten).' },
     ],
   },
 
@@ -750,9 +750,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Экстренный номер полиции в Германии — 110, скорой помощи и пожарных — 112.',
     ],
     examples: [
-      { de: 'Ich habe in meiner Heimat viel Erfahrung in der Kinderbetreuung gesammelt.', ru: 'На родине я накопил большой опыт присмотра за детьми.' },
-      { de: 'Um wie viel Uhr soll ich die Kinder von der Schule abholen?', ru: 'Во сколько мне забрать детей из школы?' },
-      { de: 'Keine Sorge, ich koche gerne gesunde Mahlzeiten für die Familie.', ru: 'Не переживайте, я с радостью готовлю здоровую еду для семьи.' },
+      { de: 'Ich spiele sehr gern mit den Kindern im Garten.', ru: 'Я очень охотно играю с детьми в саду.' },
+      { de: 'Um acht Uhr morgens bringe ich das Kind in den Kindergarten.', ru: 'В восемь часов утра я отвожу ребенка в детский сад.' },
+      { de: 'Wir kochen zusammen und ich helfe bei den Hausaufgaben.', ru: 'Мы готовим вместе, и я помогаю с домашними заданиями.' },
     ],
   },
 
@@ -786,9 +786,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'Для большинства специальностей Ausbildung минимальный порог немецкого — B1/B2, но готовить документы и резюме начинают с уровня A1/A2.',
     ],
     examples: [
-      { de: 'Ich habe mich für eine Ausbildung als Pflegefachkraft beworben.', ru: 'Я подал заявку на обучение по специальности медсестры/медбрата.' },
-      { de: 'Die Vergütung beträgt im ersten Ausbildungsjahr 1.150 Euro brutto.', ru: 'Зарплата стажера на первом году составляет 1 150 евро до вычетов.' },
-      { de: 'Mein Vorstellungsgespräch findet per Videoanruf statt.', ru: 'Мое собеседование состоится по видеосвязи.' },
+      { de: 'Ich mache eine Ausbildung in Deutschland und lerne fleißig.', ru: 'Я прохожу дуальное обучение в Германии и старательно учусь.' },
+      { de: 'Mein Arbeitstag im Betrieb beginnt um acht Uhr morgens.', ru: 'Мой рабочий день на предприятии начинается в восемь утра.' },
+      { de: 'Ich gehe zwei Tage in die Berufsschule und arbeite drei Tage.', ru: 'Я хожу два дня в профессиональную школу и работаю три дня.' },
     ],
   },
 
@@ -817,9 +817,9 @@ export const HANDBOOK_DATA: HandbookSection[] = [
       'На собеседовании говорите спокойно, смотрите в глаза сотруднику, не переходите на русский язык без прямого вопроса.',
     ],
     examples: [
-      { de: 'Guten Tag, hier sind meine vollständigen Antragsunterlagen.', ru: 'Добрый день, вот мои полные документы на визу.' },
-      { de: 'Ich habe mein Sprachzertifikat Start Deutsch A1 am Goethe-Institut abgelegt.', ru: 'Я сдал языковой сертификат Start Deutsch A1 в Гёте-Институте.' },
-      { de: 'Ich freue mich auf die interkulturelle Erfahrung in Deutschland.', ru: 'Я с нетерпением жду межкультурного опыта в Германии.' },
+      { de: 'Guten Tag! Mein Name ist Anna und hier sind meine Dokumente.', ru: 'Добрый день! Меня зовут Анна, и вот мои документы.' },
+      { de: 'Ich habe das Zertifikat Start Deutsch A1 und spreche ein bisschen Deutsch.', ru: 'У меня есть сертификат Start Deutsch A1, и я немного говорю по-немецки.' },
+      { de: 'Ich reise nach Deutschland und möchte dort Deutsch lernen.', ru: 'Я еду в Германию и хочу учить там немецкий язык.' },
     ],
   },
 ];

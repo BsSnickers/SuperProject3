@@ -15,9 +15,10 @@ import {
   X,
   Sun,
   Moon,
+  Languages,
 } from 'lucide-react';
 
-export type NavTab = 'dashboard' | 'lessons' | 'programs' | 'handbook' | 'profile' | 'admin' | 'au-pair' | 'ausbildung';
+export type NavTab = 'dashboard' | 'lessons' | 'wortschatz' | 'programs' | 'handbook' | 'profile' | 'admin' | 'au-pair' | 'ausbildung';
 
 interface SidebarProps {
   activeTab: NavTab;
@@ -49,22 +50,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
       icon: BookOpen,
     },
     {
-      id: 'programs' as NavTab,
+      id: 'wortschatz' as NavTab,
       index: '03',
+      label: 'Словарь A1',
+      meta: '550 слов',
+      icon: Languages,
+    },
+    {
+      id: 'programs' as NavTab,
+      index: '04',
       label: 'Au-Pair / Ausbildung',
       meta: 'Трекер',
       icon: Briefcase,
     },
     {
       id: 'handbook' as NavTab,
-      index: '04',
+      index: '05',
       label: 'Справочник A1',
       meta: '24 темы',
       icon: BookMarked,
     },
     {
       id: 'profile' as NavTab,
-      index: '05',
+      index: '06',
       label: 'Профиль',
       icon: User,
     },
@@ -73,7 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
   if (isAdmin) {
     navItems.push({
       id: 'admin' as NavTab,
-      index: '06',
+      index: '07',
       label: 'Панель куратора',
       meta: 'ADMIN',
       icon: ShieldCheck,
@@ -99,7 +107,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
       {/* 1. Mobile Top Sticky Header Bar */}
       <header id="mobile-sidebar-header" className="md:hidden sticky top-0 z-30 bg-white dark:bg-zinc-950 border-b border-zinc-300 dark:border-zinc-800 px-4 py-3 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-2">
-          <span className="font-serif italic font-bold text-xl tracking-tight text-zinc-950 dark:text-white">
+          <span className="font-tolyer font-medium text-2xl tracking-wide uppercase text-zinc-950 dark:text-white">
             Delfi
           </span>
           <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400 border-l border-zinc-300 dark:border-zinc-800 pl-2">
@@ -126,18 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
         </div>
       </header>
 
-      {/* 2. Mobile Floating Corner Action Button (Bottom-Right) */}
-      <button
-        id="mobile-sidebar-corner-btn"
-        onClick={() => setIsMobileOpen((prev) => !prev)}
-        title="Открыть меню"
-        className="fixed bottom-5 right-5 z-40 md:hidden bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 px-4 py-3 shadow-2xl border border-zinc-800 dark:border-zinc-300 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 rounded-full cursor-pointer hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all active:scale-95"
-      >
-        {isMobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-        <span>{isMobileOpen ? 'Закрыть' : 'Меню'}</span>
-      </button>
-
-      {/* 3. Mobile Backdrop Overlay */}
+      {/* 2. Mobile Backdrop Overlay */}
       {isMobileOpen && (
         <div
           id="mobile-sidebar-backdrop"
@@ -157,7 +154,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
             <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-serif italic font-bold text-2xl tracking-tight text-zinc-950 dark:text-white">
+                  <span className="font-tolyer font-medium text-2xl tracking-wide uppercase text-zinc-950 dark:text-white">
                     Delfi
                   </span>
                   <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400">
@@ -285,7 +282,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
               <>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-serif italic font-bold text-2xl tracking-tight text-zinc-950 dark:text-white">
+                    <span className="font-tolyer font-medium text-2xl tracking-wide uppercase text-zinc-950 dark:text-white">
                       Delfi
                     </span>
                     <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400">
@@ -307,7 +304,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
               </>
             ) : (
               <>
-                <span className="font-serif italic font-bold text-xl tracking-tight text-zinc-950 dark:text-white">
+                <span className="font-tolyer font-medium text-xl tracking-wide uppercase text-zinc-950 dark:text-white">
                   D
                 </span>
                 <button

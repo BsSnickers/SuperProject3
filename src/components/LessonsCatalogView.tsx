@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { BookOpen } from 'lucide-react';
 import { LESSONS_DATA } from '../data/lessonsData';
+import { HANDBOOK_DATA } from '../data/handbookData';
 import { useAuth } from '../context/AuthContext';
 
 interface LessonsCatalogViewProps {
   onStartLesson: (lessonId: string) => void;
+  onOpenHandbook?: (topicId: string) => void;
 }
 
-export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({ onStartLesson }) => {
+export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({ onStartLesson, onOpenHandbook }) => {
   const { progress, isAdmin } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [tabFilter, setTabFilter] = useState<'all' | 'a1_1' | 'a1_2' | 'completed' | 'exams'>('all');
@@ -156,8 +159,7 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({ onStartL
                 </p>
 
                 {/* Meta details */}
-                <div className="grid grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 font-mono text-[10px] text-zinc-600 dark:text-zinc-400 text-center mb-4">
-                  <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-2">{lesson.estimatedMinutes} мин</div>
+                <div className="grid grid-cols-2 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 font-mono text-[10px] text-zinc-600 dark:text-zinc-400 text-center mb-4">
                   <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-2 font-bold text-zinc-900 dark:text-white">{lesson.questionsCount} вопросов</div>
                   <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-2">Порог {lesson.passThreshold}%</div>
                 </div>
@@ -175,8 +177,29 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({ onStartL
                 </div>
               </div>
 
-              {/* Action Button */}
-              <div>
+              {/* Action Buttons */}
+              <div className="flex flex-col gap-2">
+                {/* Open Handbook Button */}
+                {(() => {
+                  const matchingHandbookTopic = HANDBOOK_DATA.find(
+                    (h) => h.relatedLessonId === lesson.id || h.topicNumber === lesson.number
+                  ) || HANDBOOK_DATA[0];
+
+                  return (
+                    <button
+                      id={`lesson-handbook-btn-${lesson.id}`}
+                      type="button"
+                      onClick={() => onOpenHandbook?.(matchingHandbookTopic.id)}
+                      className="w-full py-2.5 px-3 font-mono text-xs uppercase tracking-wider font-bold transition-colors border text-center flex items-center justify-center gap-1.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 border-zinc-300 dark:border-zinc-700 cursor-pointer shadow-2xs"
+                      title={`Открыть в справочнике: ${matchingHandbookTopic.title}`}
+                    >
+                      <BookOpen size={13} className="text-zinc-700 dark:text-zinc-300 shrink-0" />
+                      <span>Открыть справочник →</span>
+                    </button>
+                  );
+                })()}
+
+                {/* Open Module Button */}
                 {lesson.isComingSoon ? (
                   <button
                     disabled
@@ -194,7 +217,7 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({ onStartL
                 ) : (
                   <button
                     onClick={() => onStartLesson(lesson.id)}
-                    className={`w-full py-2.5 px-3 font-mono text-xs uppercase tracking-wider font-bold transition-colors border text-center ${
+                    className={`w-full py-2.5 px-3 font-mono text-xs uppercase tracking-wider font-bold transition-colors border text-center cursor-pointer shadow-2xs ${
                       isExam
                         ? 'bg-amber-600 hover:bg-amber-700 text-white border-amber-700'
                         : isPassed

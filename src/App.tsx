@@ -7,6 +7,7 @@ import { LessonsCatalogView } from './components/LessonsCatalogView';
 import { LessonPlayerView } from './components/LessonPlayerView';
 import { LessonResultView } from './components/LessonResultView';
 import { HandbookView } from './components/HandbookView';
+import { WortschatzView } from './components/WortschatzView';
 import { ProfileView } from './components/ProfileView';
 import { AdminView } from './components/AdminView';
 import { ProgramsView, ProgramType } from './components/ProgramsView';
@@ -25,6 +26,8 @@ function MainAppContent() {
 
   // Lesson player state
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
+  const [selectedHandbookSectionId, setSelectedHandbookSectionId] = useState<string>('topic-1');
+  const [selectedWortschatzSectionId, setSelectedWortschatzSectionId] = useState<number>(1);
   const [lastResult, setLastResult] = useState<{
     lesson: Lesson;
     scorePercent: number;
@@ -139,6 +142,20 @@ function MainAppContent() {
     }
   };
 
+  const handleOpenHandbook = (topicId?: string) => {
+    if (topicId) {
+      setSelectedHandbookSectionId(topicId);
+    }
+    setActiveTab('handbook');
+  };
+
+  const handleOpenWortschatz = (sectionId?: number) => {
+    if (sectionId) {
+      setSelectedWortschatzSectionId(sectionId);
+    }
+    setActiveTab('wortschatz');
+  };
+
   const handleSelectTab = (tab: NavTab) => {
     if (tab === 'au-pair') {
       setSelectedProgram('au-pair');
@@ -163,18 +180,33 @@ function MainAppContent() {
             <DashboardView
               onStartLesson={handleStartLesson}
               onNavigateTab={handleSelectTab}
+              onOpenHandbook={handleOpenHandbook}
             />
           )}
           {activeTab === 'lessons' && (
-            <LessonsCatalogView onStartLesson={handleStartLesson} />
+            <LessonsCatalogView
+              onStartLesson={handleStartLesson}
+              onOpenHandbook={handleOpenHandbook}
+            />
           )}
           {(activeTab === 'programs' || activeTab === 'au-pair' || activeTab === 'ausbildung') && (
             <ProgramsView initialProgram={selectedProgram} />
           )}
           {activeTab === 'handbook' && (
-            <HandbookView onStartLesson={handleStartLesson} />
+            <HandbookView
+              onStartLesson={handleStartLesson}
+              initialSectionId={selectedHandbookSectionId}
+            />
           )}
-          {activeTab === 'profile' && <ProfileView onStartLesson={handleStartLesson} />}
+          {activeTab === 'wortschatz' && (
+            <WortschatzView initialSectionId={selectedWortschatzSectionId} />
+          )}
+          {activeTab === 'profile' && (
+            <ProfileView
+              onStartLesson={handleStartLesson}
+              onOpenWortschatz={handleOpenWortschatz}
+            />
+          )}
           {activeTab === 'admin' && <AdminView />}
         </div>
       </main>

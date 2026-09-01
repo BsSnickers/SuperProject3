@@ -22,17 +22,24 @@ import {
 
 interface HandbookViewProps {
   onStartLesson?: (lessonId: string) => void;
+  initialSectionId?: string;
 }
 
 type FilterCategory = 'all' | 'grammar' | 'vocabulary' | 'visa-tips' | 'A1.1' | 'A1.2';
 
-export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson }) => {
+export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson, initialSectionId }) => {
   const { progress, isAdmin } = useAuth();
-  const [selectedSectionId, setSelectedSectionId] = useState<string>(HANDBOOK_DATA[0].id);
+  const [selectedSectionId, setSelectedSectionId] = useState<string>(initialSectionId || HANDBOOK_DATA[0].id);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<FilterCategory>('all');
   const [copiedNotification, setCopiedNotification] = useState(false);
   const [isTocOpen, setIsTocOpen] = useState(false);
+
+  useEffect(() => {
+    if (initialSectionId) {
+      setSelectedSectionId(initialSectionId);
+    }
+  }, [initialSectionId]);
 
   // Filtered list based on search and category tab
   const filteredSections = useMemo(() => {

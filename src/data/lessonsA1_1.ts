@@ -999,7 +999,7 @@ export const LESSONS_A1_1: Lesson[] = [
   {
     "id": "lesson-8",
     "number": 8,
-    "titleDe": "Imperativ (du / ihr / Sie)",
+    "titleDe": "Imperativ (du / ihr / Sie / wir)",
     "titleRu": "Повелительное наклонение",
     "description": "Образование команд и просьб для трех форм обращения: на «ты» (du-Form), к группе друзей (ihr-Form) и вежливо (Sie-Form), включая особые глаголы sein и сильные глаголы.",
     "difficulty": "A1.1",

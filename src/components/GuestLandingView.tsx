@@ -99,37 +99,81 @@ export const GuestLandingView: React.FC<GuestLandingViewProps> = ({
               </div>
             </div>
 
-            {/* Right Column: Architectural Data Grid */}
-            <div className="lg:col-span-5 bg-zinc-950/80 backdrop-blur-md flex flex-col justify-between">
-              <div className="p-8 md:p-12 border-b border-white/15">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 mb-4">
-                  [001 / Спецификация платформы]
-                </div>
-                <div className="grid grid-cols-2 gap-px bg-white/20 border border-white/20">
-                  <div className="bg-zinc-900/90 p-5">
-                    <div className="font-serif text-3xl text-white">21</div>
-                    <div className="font-mono text-[10px] text-zinc-300 uppercase tracking-wider mt-1">
-                      Интерактивный урок
+            {/* Right Column: Academic Curriculum & Exam Standards Overview */}
+            <div className="lg:col-span-5 bg-zinc-950/90 backdrop-blur-md flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-white/15">
+              <div className="p-6 md:p-8 flex flex-col gap-6">
+                <div className="flex items-center justify-between border-b border-white/15 pb-4">
+                  <div>
+                    <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400">
+                      Учебный план курса
+                    </div>
+                    <div className="font-serif text-lg text-white font-normal mt-0.5">
+                      Lehrplan Goethe-Zertifikat A1
                     </div>
                   </div>
-                  <div className="bg-zinc-900/90 p-5">
-                    <div className="font-serif text-3xl text-blue-400">100%</div>
-                    <div className="font-mono text-[10px] text-zinc-300 uppercase tracking-wider mt-1">
-                      Практика и тесты
+                  <span className="font-mono text-[10px] px-2 py-1 bg-white/10 text-zinc-200 border border-white/20">
+                    A1.1 — A1.2
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-4 font-sans text-xs">
+                  {/* Step 1 */}
+                  <div className="border border-white/10 p-4 bg-white/[0.03] flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between font-mono text-[10px]">
+                      <span className="text-blue-400 font-bold uppercase tracking-wider">Ступень I</span>
+                      <span className="text-zinc-400">A1.1</span>
                     </div>
+                    <div className="font-medium text-white text-sm">
+                      Основы языка и базовая коммуникация
+                    </div>
+                    <p className="text-zinc-300 leading-relaxed text-[11px]">
+                      Алфавит, правила чтения, спряжение глаголов, артикли, падеж Akkusativ, покупки, ориентация во времени и диалоги знакомства.
+                    </p>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className="border border-white/10 p-4 bg-white/[0.03] flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between font-mono text-[10px]">
+                      <span className="text-blue-400 font-bold uppercase tracking-wider">Ступень II</span>
+                      <span className="text-zinc-400">A1.2</span>
+                    </div>
+                    <div className="font-medium text-white text-sm">
+                      Сложная грамматика и аудирование
+                    </div>
+                    <p className="text-zinc-300 leading-relaxed text-[11px]">
+                      Прошедшее время Perfekt, модальные глаголы, дательный падеж Dativ, предлоги с двойным управлением, составление писем и формуляров.
+                    </p>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="border border-white/10 p-4 bg-white/[0.03] flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between font-mono text-[10px]">
+                      <span className="text-emerald-400 font-bold uppercase tracking-wider">Визовый трек & Документы</span>
+                      <span className="text-zinc-400">Au-Pair / Ausbildung</span>
+                    </div>
+                    <div className="font-medium text-white text-sm">
+                      Подготовка к собеседованию и отъезду
+                    </div>
+                    <p className="text-zinc-300 leading-relaxed text-[11px]">
+                      Адаптированные материалы для программ Au-Pair и Ausbildung: пакет документов, мотивационные письма, подготовка к посольству.
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-8 md:p-12 bg-zinc-900/90 flex flex-col gap-3">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400">
-                  [002 / Документы]
-                </span>
-                <p className="font-serif text-lg italic text-white leading-snug">
-                  «Платформа подготовит вас к языковому тесту.»
-                </p>
-                <div className="font-mono text-[11px] text-zinc-300 uppercase tracking-wider">
-                  Кураторство • Подбор семей • Договоры Ausbildung
+              {/* Bottom bar with exact parameters */}
+              <div className="p-4 md:px-8 md:py-4 bg-zinc-900/90 border-t border-white/15 grid grid-cols-3 gap-2 font-mono text-[10px] text-center text-zinc-300">
+                <div className="border-r border-white/10 pr-2">
+                  <span className="text-white font-bold block text-xs">24</span>
+                  <span>модуля</span>
+                </div>
+                <div className="border-r border-white/10 pr-2">
+                  <span className="text-white font-bold block text-xs">250+</span>
+                  <span>упражнений</span>
+                </div>
+                <div>
+                  <span className="text-emerald-400 font-bold block text-xs">&ge; 70%</span>
+                  <span>порог сдачи</span>
                 </div>
               </div>
             </div>
