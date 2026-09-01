@@ -37,17 +37,17 @@ export const LessonResultView: React.FC<LessonResultViewProps> = ({
   }, [isPassed]);
 
   return (
-    <div id="lesson-result-view" className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-6 font-sans">
-      <div className="border border-zinc-300 bg-white p-8 md:p-12 max-w-lg w-full flex flex-col gap-8">
+    <div id="lesson-result-view" className="min-h-screen bg-[#F8F9FA] dark:bg-[#09090B] flex items-center justify-center p-6 font-sans transition-colors">
+      <div className="border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 md:p-12 max-w-lg w-full flex flex-col gap-8 shadow-2xl">
         {/* Top Status Header */}
-        <div className="text-center flex flex-col gap-2 pb-6 border-b border-zinc-200">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400">
+        <div className="text-center flex flex-col gap-2 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
             [Протокол тестирования • Модуль #{lesson.number}]
           </span>
-          <h1 className="font-serif text-3xl md:text-4xl font-normal text-zinc-950">
+          <h1 className="font-serif text-3xl md:text-4xl font-normal text-zinc-950 dark:text-white">
             {isPassed ? 'Модуль успешно сдан.' : 'Требуется повторение.'}
           </h1>
-          <p className="text-xs text-zinc-600 font-sans mt-1">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans mt-1">
             {isPassed
               ? `Вы набрали ${scorePercent}% и подтвердили порог ${lesson.passThreshold}%.`
               : `Текущий результат ${scorePercent}%. Необходимый порог для зачета — ${lesson.passThreshold}%.`}
@@ -55,22 +55,22 @@ export const LessonResultView: React.FC<LessonResultViewProps> = ({
         </div>
 
         {/* Score Grid: Architectural Data Box */}
-        <div className="grid grid-cols-3 gap-px bg-zinc-200 border border-zinc-200 font-mono text-center">
-          <div className="bg-[#FAFAFA] p-4">
+        <div className="grid grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 font-mono text-center">
+          <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-4">
             <div className="text-[9px] uppercase tracking-wider text-zinc-400">Результат</div>
-            <div className="font-serif text-2xl font-normal text-zinc-950 mt-1">
+            <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
               {scorePercent}%
             </div>
           </div>
-          <div className="bg-[#FAFAFA] p-4">
+          <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-4">
             <div className="text-[9px] uppercase tracking-wider text-zinc-400">Правильно</div>
-            <div className="font-serif text-2xl font-normal text-zinc-950 mt-1">
+            <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
               {correctAnswers}/{totalQuestions}
             </div>
           </div>
-          <div className="bg-[#FAFAFA] p-4">
+          <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-4">
             <div className="text-[9px] uppercase tracking-wider text-zinc-400">Порог</div>
-            <div className="font-serif text-2xl font-normal text-zinc-600 mt-1">
+            <div className="font-serif text-2xl font-normal text-zinc-600 dark:text-zinc-400 mt-1">
               {lesson.passThreshold}%
             </div>
           </div>
@@ -82,7 +82,7 @@ export const LessonResultView: React.FC<LessonResultViewProps> = ({
             <button
               id="result-next-lesson-btn"
               onClick={() => onNextLesson(nextLesson.id)}
-              className="w-full py-3.5 px-4 bg-black hover:bg-[#0033CC] text-white uppercase tracking-wider font-bold transition-colors border border-black text-center"
+              className="w-full py-3.5 px-4 bg-black dark:bg-[#0033CC] hover:bg-[#0033CC] dark:hover:bg-blue-500 text-white uppercase tracking-wider font-bold transition-colors border border-black dark:border-blue-600 text-center cursor-pointer"
             >
               Следующий модуль (#{nextLesson.number}) →
             </button>
@@ -90,7 +90,7 @@ export const LessonResultView: React.FC<LessonResultViewProps> = ({
             <button
               id="result-retry-btn"
               onClick={onRetry}
-              className="w-full py-3.5 px-4 bg-black hover:bg-[#0033CC] text-white uppercase tracking-wider font-bold transition-colors border border-black text-center"
+              className="w-full py-3.5 px-4 bg-black dark:bg-zinc-100 hover:bg-[#0033CC] dark:hover:bg-blue-600 text-white dark:text-zinc-950 dark:hover:text-white uppercase tracking-wider font-bold transition-colors border border-black dark:border-zinc-100 text-center cursor-pointer"
             >
               Повторить тестирование ↺
             </button>
@@ -100,7 +100,7 @@ export const LessonResultView: React.FC<LessonResultViewProps> = ({
             {isPassed && (
               <button
                 onClick={onRetry}
-                className="py-2.5 px-3 bg-white hover:bg-zinc-100 text-zinc-800 uppercase tracking-wider border border-zinc-300 transition-colors text-center"
+                className="py-2.5 px-3 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 transition-colors text-center cursor-pointer"
               >
                 Повторить
               </button>
@@ -109,7 +109,7 @@ export const LessonResultView: React.FC<LessonResultViewProps> = ({
             <button
               id="result-catalog-btn"
               onClick={onGoToCatalog}
-              className={`py-2.5 px-3 bg-white hover:bg-zinc-100 text-zinc-800 uppercase tracking-wider border border-zinc-300 transition-colors text-center ${
+              className={`py-2.5 px-3 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 transition-colors text-center cursor-pointer ${
                 !isPassed ? 'col-span-2' : ''
               }`}
             >

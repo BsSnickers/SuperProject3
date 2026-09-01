@@ -58,15 +58,15 @@ export const EmailVerificationBanner: React.FC = () => {
   };
 
   return (
-    <div id="email-verification-banner" className="bg-amber-50 border-b border-amber-300 text-amber-950 px-4 py-3 font-sans">
+    <div id="email-verification-banner" className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-700/60 text-amber-950 dark:text-amber-100 px-4 py-3 font-sans transition-colors">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono text-xs">
         <div className="flex items-center gap-3">
           <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping"></span>
           <div>
-            <span className="font-bold uppercase tracking-wider text-[11px] text-amber-900">
+            <span className="font-bold uppercase tracking-wider text-[11px] text-amber-900 dark:text-amber-300">
               [Требуется подтверждение Email]
             </span>
-            <span className="font-sans ml-2 text-xs text-amber-900">
+            <span className="font-sans ml-2 text-xs text-amber-900 dark:text-amber-200">
               Пожалуйста, подтвердите адрес <strong className="font-mono">{user.email}</strong> для полноценного доступа к визовому трекеру и сертификатам.
             </span>
           </div>
@@ -78,7 +78,7 @@ export const EmailVerificationBanner: React.FC = () => {
             id="banner-check-verification-btn"
             onClick={handleCheck}
             disabled={checking}
-            className="px-3 py-1.5 bg-amber-950 hover:bg-black text-white uppercase font-bold transition-colors"
+            className="px-3 py-1.5 bg-amber-950 dark:bg-amber-300 hover:bg-black dark:hover:bg-amber-200 text-white dark:text-amber-950 uppercase font-bold transition-colors cursor-pointer"
           >
             {checking ? 'Проверка...' : '✓ Проверить статус'}
           </button>
@@ -88,7 +88,7 @@ export const EmailVerificationBanner: React.FC = () => {
             id="banner-resend-verification-btn"
             onClick={handleResend}
             disabled={resending}
-            className="px-3 py-1.5 bg-white hover:bg-amber-100 text-amber-950 border border-amber-400 uppercase transition-colors"
+            className="px-3 py-1.5 bg-white dark:bg-zinc-900 hover:bg-amber-100 dark:hover:bg-zinc-800 text-amber-950 dark:text-amber-200 border border-amber-400 dark:border-amber-700 uppercase transition-colors cursor-pointer"
           >
             {resending ? 'Отправка...' : '✉️ Отправить повторно'}
           </button>
@@ -96,7 +96,7 @@ export const EmailVerificationBanner: React.FC = () => {
           <button
             type="button"
             onClick={handleSimulate}
-            className="px-2 py-1.5 bg-amber-200/70 hover:bg-amber-300 text-amber-900 uppercase text-[10px] transition-colors"
+            className="px-2 py-1.5 bg-amber-200/70 dark:bg-amber-900/60 hover:bg-amber-300 dark:hover:bg-amber-800 text-amber-900 dark:text-amber-300 uppercase text-[10px] transition-colors cursor-pointer"
             title="Быстрое подтверждение для тестирования"
           >
             [Демо-активация]
@@ -106,8 +106,8 @@ export const EmailVerificationBanner: React.FC = () => {
 
       {(message || error) && (
         <div className="max-w-7xl mx-auto mt-2 font-sans text-xs">
-          {message && <div className="text-emerald-700 font-medium">{message}</div>}
-          {error && <div className="text-rose-700 font-medium">{error}</div>}
+          {message && <div className="text-emerald-700 dark:text-emerald-400 font-medium">{message}</div>}
+          {error && <div className="text-rose-700 dark:text-rose-400 font-medium">{error}</div>}
         </div>
       )}
     </div>

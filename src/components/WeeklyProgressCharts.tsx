@@ -72,17 +72,17 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
   };
 
   return (
-    <div id="weekly-progress-charts" className="border border-zinc-300 bg-white p-6 md:p-8 flex flex-col gap-8">
+    <div id="weekly-progress-charts" className="border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 md:p-8 flex flex-col gap-8 transition-colors">
       {/* Header & Metric Switcher */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-zinc-200">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-zinc-200 dark:border-zinc-800">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 mb-1">
+          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">
             [Аналитика успеваемости • Реальные данные тестов]
           </div>
-          <h2 className="font-serif text-2xl md:text-3xl text-zinc-950 font-normal">
+          <h2 className="font-serif text-2xl md:text-3xl text-zinc-950 dark:text-white font-normal">
             Динамика изучения немецкого языка по неделям
           </h2>
-          <p className="text-xs text-zinc-500 font-sans mt-1">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans mt-1">
             {hasAnyAttempt
               ? `Мониторинг на основе ${analytics.passedLessonsCount} сданных модулей и ${analytics.totalAttempts} попыток тестирования.`
               : 'Пройдите ваш первый модуль A1, чтобы активировать персональную графическую аналитику.'}
@@ -90,14 +90,14 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
         </div>
 
         {/* View Switcher Buttons */}
-        <div className="flex items-center gap-1 font-mono text-xs shrink-0 bg-zinc-100 p-1 border border-zinc-300">
+        <div className="flex items-center gap-1 font-mono text-xs shrink-0 bg-zinc-100 dark:bg-zinc-800 p-1 border border-zinc-300 dark:border-zinc-700">
           <button
             id="metric-tab-accuracy"
             onClick={() => setActiveMetric('accuracy')}
             className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold cursor-pointer ${
               activeMetric === 'accuracy'
-                ? 'bg-black text-white'
-                : 'text-zinc-600 hover:text-zinc-950'
+                ? 'bg-black dark:bg-zinc-100 text-white dark:text-zinc-950'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
             }`}
           >
             Точность (%)
@@ -107,8 +107,8 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
             onClick={() => setActiveMetric('volume')}
             className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold cursor-pointer ${
               activeMetric === 'volume'
-                ? 'bg-black text-white'
-                : 'text-zinc-600 hover:text-zinc-950'
+                ? 'bg-black dark:bg-zinc-100 text-white dark:text-zinc-950'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
             }`}
           >
             Слова и Задания
@@ -118,8 +118,8 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
             onClick={() => setActiveMetric('time')}
             className={`px-3 py-1.5 uppercase transition-colors text-[11px] font-bold cursor-pointer ${
               activeMetric === 'time'
-                ? 'bg-black text-white'
-                : 'text-zinc-600 hover:text-zinc-950'
+                ? 'bg-black dark:bg-zinc-100 text-white dark:text-zinc-950'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white'
             }`}
           >
             Время (мин)
@@ -128,54 +128,54 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
       </div>
 
       {/* 4 Weekly KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 border border-zinc-200 font-mono text-center">
-        <div className="bg-[#FAFAFA] p-4">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Словарный запас</div>
-          <div className="font-serif text-2xl font-normal text-zinc-950 mt-1">
-            {totalWordsLearned} <span className="text-xs text-zinc-500 font-mono">слов</span>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 font-mono text-center">
+        <div className="bg-[#FAFAFA] dark:bg-zinc-900 p-4">
+          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Словарный запас</div>
+          <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
+            {totalWordsLearned} <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">слов</span>
           </div>
-          <div className="text-[10px] text-zinc-500 mt-0.5">
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
             {hasAnyAttempt ? 'Изучено в модулях' : 'Ожидает 1-го теста'}
           </div>
         </div>
 
-        <div className="bg-[#FAFAFA] p-4">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Время практики</div>
-          <div className="font-serif text-2xl font-normal text-zinc-950 mt-1">
-            {totalStudyHours} <span className="text-xs text-zinc-500 font-mono">часов</span>
+        <div className="bg-[#FAFAFA] dark:bg-zinc-900 p-4">
+          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Время практики</div>
+          <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
+            {totalStudyHours} <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">часов</span>
           </div>
-          <div className="text-[10px] text-zinc-500 mt-0.5">
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
             {analytics.totalStudyMinutes} минут тестов
           </div>
         </div>
 
-        <div className="bg-[#FAFAFA] p-4">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Динамика точности</div>
-          <div className="font-serif text-2xl font-normal text-[#0033CC] mt-1">
+        <div className="bg-[#FAFAFA] dark:bg-zinc-900 p-4">
+          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Динамика точности</div>
+          <div className="font-serif text-2xl font-normal text-[#0033CC] dark:text-blue-400 mt-1">
             {accuracyGrowth >= 0 ? `+${accuracyGrowth}%` : `${accuracyGrowth}%`}
           </div>
-          <div className="text-[10px] text-zinc-500 mt-0.5">
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
             {hasAnyAttempt ? `Текущая точность: ${avgScore}%` : 'Нет данных'}
           </div>
         </div>
 
-        <div className="bg-[#FAFAFA] p-4">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400">Решено вопросов</div>
-          <div className="font-serif text-2xl font-normal text-zinc-950 mt-1">
-            {totalQuestionsSolved} <span className="text-xs text-zinc-500 font-mono">задач</span>
+        <div className="bg-[#FAFAFA] dark:bg-zinc-900 p-4">
+          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Решено вопросов</div>
+          <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
+            {totalQuestionsSolved} <span className="text-xs text-zinc-500 dark:text-zinc-400 font-mono">задач</span>
           </div>
-          <div className="text-[10px] text-zinc-500 mt-0.5">
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
             {currentWeekExercises} за тек. неделю
           </div>
         </div>
       </div>
 
       {!hasAnyAttempt && (
-        <div className="bg-zinc-100 border border-zinc-300 p-4 font-mono text-xs text-zinc-800 text-center flex flex-col gap-1">
-          <div className="font-bold text-zinc-950 uppercase text-[11px]">
+        <div className="bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 p-4 font-mono text-xs text-zinc-800 dark:text-zinc-200 text-center flex flex-col gap-1">
+          <div className="font-bold text-zinc-950 dark:text-white uppercase text-[11px]">
             [Информационная панель]
           </div>
-          <p className="font-sans text-xs text-zinc-600">
+          <p className="font-sans text-xs text-zinc-600 dark:text-zinc-400">
             Вы еще не проходили тесты. Пройдите первый модуль в каталоге уроков, чтобы график и компетенции автоматически заполнились вашими реальными результатами.
           </p>
         </div>
@@ -188,17 +188,17 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
             <AreaChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="accuracyGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0033CC" stopOpacity={0.25} />
+                  <stop offset="5%" stopColor="#0033CC" stopOpacity={0.35} />
                   <stop offset="95%" stopColor="#0033CC" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#3F3F46" opacity={0.3} vertical={false} />
               <XAxis
                 dataKey="weekShort"
                 stroke="#71717A"
                 fontSize={11}
                 tickLine={false}
-                axisLine={{ stroke: '#D4D4D8' }}
+                axisLine={{ stroke: '#52525B' }}
               />
               <YAxis
                 stroke="#71717A"
@@ -206,7 +206,7 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
                 domain={[0, 100]}
                 unit="%"
                 tickLine={false}
-                axisLine={{ stroke: '#D4D4D8' }}
+                axisLine={{ stroke: '#52525B' }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend
@@ -219,18 +219,18 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
                 dataKey="accuracy"
                 name="Точность ответов (реальная)"
                 unit="%"
-                stroke="#0033CC"
+                stroke="#3B82F6"
                 strokeWidth={2.5}
                 fillOpacity={1}
                 fill="url(#accuracyGradient)"
-                activeDot={{ r: 5, fill: '#0033CC', stroke: '#FFFFFF', strokeWidth: 2 }}
+                activeDot={{ r: 5, fill: '#3B82F6', stroke: '#FFFFFF', strokeWidth: 2 }}
               />
               <Line
                 type="monotone"
                 dataKey="passThreshold"
                 name="Порог сдачи (70%)"
                 unit="%"
-                stroke="#A1A1AA"
+                stroke="#71717A"
                 strokeDasharray="4 4"
                 strokeWidth={1.5}
                 dot={false}
@@ -238,19 +238,19 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
             </AreaChart>
           ) : activeMetric === 'volume' ? (
             <BarChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#3F3F46" opacity={0.3} vertical={false} />
               <XAxis
                 dataKey="weekShort"
                 stroke="#71717A"
                 fontSize={11}
                 tickLine={false}
-                axisLine={{ stroke: '#D4D4D8' }}
+                axisLine={{ stroke: '#52525B' }}
               />
               <YAxis
                 stroke="#71717A"
                 fontSize={11}
                 tickLine={false}
-                axisLine={{ stroke: '#D4D4D8' }}
+                axisLine={{ stroke: '#52525B' }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend
@@ -262,33 +262,33 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
                 dataKey="newWords"
                 name="Словарный запас"
                 unit=" слов"
-                fill="#18181B"
+                fill="#71717A"
                 barSize={18}
               />
               <Bar
                 dataKey="exercises"
                 name="Решенные задания"
                 unit=" упр."
-                fill="#0033CC"
+                fill="#3B82F6"
                 barSize={18}
               />
             </BarChart>
           ) : (
             <LineChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E4E4E7" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#3F3F46" opacity={0.3} vertical={false} />
               <XAxis
                 dataKey="weekShort"
                 stroke="#71717A"
                 fontSize={11}
                 tickLine={false}
-                axisLine={{ stroke: '#D4D4D8' }}
+                axisLine={{ stroke: '#52525B' }}
               />
               <YAxis
                 stroke="#71717A"
                 fontSize={11}
                 unit=" мин"
                 tickLine={false}
-                axisLine={{ stroke: '#D4D4D8' }}
+                axisLine={{ stroke: '#52525B' }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend
@@ -301,10 +301,10 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
                 dataKey="studyMinutes"
                 name="Время практики"
                 unit=" мин"
-                stroke="#09090B"
+                stroke="#3B82F6"
                 strokeWidth={2.5}
-                dot={{ r: 4, fill: '#09090B' }}
-                activeDot={{ r: 6, fill: '#0033CC', stroke: '#FFFFFF', strokeWidth: 2 }}
+                dot={{ r: 4, fill: '#3B82F6' }}
+                activeDot={{ r: 6, fill: '#60A5FA', stroke: '#FFFFFF', strokeWidth: 2 }}
               />
             </LineChart>
           )}
@@ -312,28 +312,28 @@ export const WeeklyProgressCharts: React.FC<WeeklyProgressChartsProps> = ({
       </div>
 
       {/* Competence Breakdown footer */}
-      <div className="border-t border-zinc-200 pt-6">
-        <div className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 mb-3">
+      <div className="border-t border-zinc-200 dark:border-zinc-800 pt-6">
+        <div className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-3">
           [Распределение компетенций A1 по реальным ответам]
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
           {competences.map((comp) => (
-            <div key={comp.id} className="p-3 bg-[#FAFAFA] border border-zinc-200 flex flex-col justify-between gap-2">
+            <div key={comp.id} className="p-3 bg-[#FAFAFA] dark:bg-zinc-850 border border-zinc-200 dark:border-zinc-750 flex flex-col justify-between gap-2">
               <div>
-                <div className="flex justify-between items-center text-[10px] uppercase text-zinc-500 mb-1">
-                  <span className="font-bold text-zinc-800">{comp.title}</span>
-                  <span className={`font-bold ${comp.hasData ? 'text-[#0033CC]' : 'text-zinc-400'}`}>
+                <div className="flex justify-between items-center text-[10px] uppercase text-zinc-500 dark:text-zinc-400 mb-1">
+                  <span className="font-bold text-zinc-800 dark:text-zinc-200">{comp.title}</span>
+                  <span className={`font-bold ${comp.hasData ? 'text-[#0033CC] dark:text-blue-400' : 'text-zinc-400 dark:text-zinc-600'}`}>
                     {comp.hasData ? `${comp.accuracy}%` : '0%'}
                   </span>
                 </div>
-                <div className="w-full bg-zinc-200 h-1 mt-1">
+                <div className="w-full bg-zinc-200 dark:bg-zinc-700 h-1 mt-1">
                   <div
-                    className="bg-[#0033CC] h-1 transition-all duration-300"
+                    className="bg-[#0033CC] dark:bg-blue-500 h-1 transition-all duration-300"
                     style={{ width: comp.hasData ? `${comp.accuracy}%` : '0%' }}
                   />
                 </div>
               </div>
-              <div className="text-[10px] text-zinc-500 font-sans leading-tight">
+              <div className="text-[10px] text-zinc-500 dark:text-zinc-400 font-sans leading-tight">
                 {comp.description}
               </div>
             </div>

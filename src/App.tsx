@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { Sidebar, NavTab } from './components/Sidebar';
 import { DashboardView } from './components/DashboardView';
 import { LessonsCatalogView } from './components/LessonsCatalogView';
@@ -33,10 +34,10 @@ function MainAppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center font-mono text-xs">
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#09090B] text-zinc-900 dark:text-zinc-100 flex items-center justify-center font-mono text-xs">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-black border-t-transparent animate-spin"></div>
-          <span className="text-xs uppercase tracking-widest text-zinc-600">Загрузка платформы Delfi...</span>
+          <div className="w-8 h-8 border-2 border-black dark:border-white border-t-transparent dark:border-t-transparent animate-spin"></div>
+          <span className="text-xs uppercase tracking-widest text-zinc-600 dark:text-zinc-400">Загрузка платформы Delfi...</span>
         </div>
       </div>
     );
@@ -151,12 +152,12 @@ function MainAppContent() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#F6F8FA] text-slate-900 font-sans">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#F6F8FA] dark:bg-[#09090B] text-slate-900 dark:text-zinc-100 font-sans transition-colors duration-150">
       {/* Fixed Left Navigation Sidebar */}
       <Sidebar activeTab={activeTab} onSelectTab={handleSelectTab} />
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 md:overflow-y-auto md:max-h-screen flex flex-col">
+      <main className="flex-1 min-w-0 md:overflow-y-auto md:max-h-screen flex flex-col bg-[#F6F8FA] dark:bg-[#09090B]">
         <div className="flex-1 pb-16 md:pb-0">
           {activeTab === 'dashboard' && (
             <DashboardView
@@ -183,8 +184,10 @@ function MainAppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <MainAppContent />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <MainAppContent />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
