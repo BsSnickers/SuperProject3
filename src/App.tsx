@@ -17,6 +17,7 @@ import { AuthModal } from './components/AuthModal';
 import { EmailVerificationScreen } from './components/EmailVerificationScreen';
 import { LESSONS_DATA } from './data/lessonsData';
 import { Lesson } from './types';
+import { checkModuleAccess } from './utils/modulePrerequisites';
 
 function MainAppContent() {
   const { user, loading, isEmailVerified, saveProgress, progress, isAdmin } = useAuth();
@@ -137,10 +138,8 @@ function MainAppContent() {
     const lesson = LESSONS_DATA.find((l) => l.id === lessonId);
     if (!lesson || lesson.isComingSoon) return;
 
-    const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
-    const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
-
-    if (isUnlocked) {
+    const access = checkModuleAccess(lesson, progress, isAdmin);
+    if (access.isUnlocked) {
       setActiveLesson(lesson);
     }
   };
@@ -202,12 +201,14 @@ function MainAppContent() {
               onStartLesson={handleStartLesson}
               onNavigateTab={handleSelectTab}
               onOpenHandbook={handleOpenHandbook}
+              onOpenWortschatz={handleOpenWortschatz}
             />
           )}
           {activeTab === 'lessons' && (
             <LessonsCatalogView
               onStartLesson={handleStartLesson}
               onOpenHandbook={handleOpenHandbook}
+              onOpenWortschatz={handleOpenWortschatz}
               externalSearch={searchQuery}
             />
           )}
@@ -227,6 +228,7 @@ function MainAppContent() {
             <ProfileView
               onStartLesson={handleStartLesson}
               onOpenWortschatz={handleOpenWortschatz}
+              onOpenHandbook={handleOpenHandbook}
             />
           )}
           {activeTab === 'admin' && <AdminView />}

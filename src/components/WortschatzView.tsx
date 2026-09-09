@@ -3,6 +3,7 @@ import confetti from 'canvas-confetti';
 import { WORTSCHATZ_DATA } from '../data/wortschatzData';
 import { useAuth } from '../context/AuthContext';
 import { WortschatzQuizQuestion } from '../types';
+import { notifyWortschatzUpdated } from '../utils/modulePrerequisites';
 import {
   BookOpen,
   ChevronLeft,
@@ -100,6 +101,7 @@ export const WortschatzView: React.FC<WortschatzViewProps> = ({ initialSectionId
     setQuizProgress(newProgress);
     try {
       localStorage.setItem('delfi_wortschatz_progress', JSON.stringify(newProgress));
+      notifyWortschatzUpdated();
     } catch {
       // Storage errors ignored
     }

@@ -1,14 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { Lock, Flame, CheckCircle2, Award, HelpCircle, Mail, ShieldCheck, Calendar, ArrowRight, BookOpen, BarChart3 } from 'lucide-react';
+import { Lock, Flame, CheckCircle2, Award, HelpCircle, Mail, ShieldCheck, Calendar, ArrowRight, BookOpen, BarChart3, Languages } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { WeeklyProgressCharts } from './WeeklyProgressCharts';
 import { calculateRealAnalytics, RealAnalyticsSummary } from '../utils/analytics';
 import { LESSONS_DATA } from '../data/lessonsData';
 import { WORTSCHATZ_DATA } from '../data/wortschatzData';
+import { useModulePrerequisites, checkModuleAccess } from '../utils/modulePrerequisites';
 
 interface ProfileViewProps {
   onStartLesson?: (lessonId: string) => void;
   onOpenWortschatz?: (sectionId?: number) => void;
+  onOpenHandbook?: (topicId: string) => void;
 }
 
 interface WortschatzProgressRecord {
@@ -20,8 +22,9 @@ interface WortschatzProgressRecord {
   attemptsCount: number;
 }
 
-export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenWortschatz }) => {
+export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenWortschatz, onOpenHandbook }) => {
   const { profile, progress, isAdmin, isEmailVerified, sendVerificationEmail, checkEmailVerification } = useAuth();
+  const { viewedHandbookTopics, wortschatzProgress: reactiveWortschatzProgress } = useModulePrerequisites();
   const [resending, setResending] = useState(false);
   const [checking, setChecking] = useState(false);
   const [statusNotice, setStatusNotice] = useState<string | null>(null);
@@ -34,7 +37,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
     } catch {
       return {};
     }
-  }, []);
+  }, [reactiveWortschatzProgress]);
 
   const wortschatzPassedCount = useMemo(() => {
     return Object.values(wortschatzProgress).filter((p) => p?.passed).length;
@@ -355,8 +358,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
               </thead>
               <tbody className="divide-y divide-slate-200/80 dark:divide-slate-800">
                 {lessonDetails.map(({ lesson, progress: prog, status }) => {
-                  const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
-                  const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
+                  const access = checkModuleAccess(
+                    lesson,
+                    progress,
+                    isAdmin,
+                    viewedHandbookTopics,
+                    reactiveWortschatzProgress
+                  );
 
                   return (
                     <tr key={lesson.id} className="hover:bg-slate-50 dark:hover:bg-[#111C2E]/60 transition-colors">
@@ -366,6 +374,38 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
                       <td className="p-3.5">
                         <div className="font-heading font-semibold text-sm text-[#0B1F3A] dark:text-white">{lesson.titleRu}</div>
                         <div className="text-[11px] text-slate-500 dark:text-[#94A3B8]">{lesson.titleDe}</div>
+                        
+                        {/* Quick links for handbook/wortschatz */}
+                        <div className="flex items-center gap-2 mt-1.5">
+                          {access.handbookTopic && onOpenHandbook && (
+                            <button
+                              type="button"
+                              onClick={() => onOpenHandbook(access.handbookTopic!.id)}
+                              className={`text-[10px] px-1.5 py-0.5 rounded inline-flex items-center gap-1 transition-colors cursor-pointer ${
+                                access.isHandbookViewed
+                                  ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                                  : 'bg-blue-50 dark:bg-blue-950/40 text-[#3B82F6] hover:underline'
+                              }`}
+                            >
+                              <BookOpen size={10} />
+                              <span>Справочник {access.isHandbookViewed ? '✓' : ''}</span>
+                            </button>
+                          )}
+                          {access.wortschatzSection && onOpenWortschatz && (
+                            <button
+                              type="button"
+                              onClick={() => onOpenWortschatz(access.wortschatzSection!.section_id)}
+                              className={`text-[10px] px-1.5 py-0.5 rounded inline-flex items-center gap-1 transition-colors cursor-pointer ${
+                                access.isWortschatzPassed
+                                  ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                                  : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 hover:underline'
+                              }`}
+                            >
+                              <Languages size={10} />
+                              <span>Словарь {access.isWortschatzPassed ? '✓' : ''}</span>
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="p-3.5 whitespace-nowrap">
                         {status === 'passed' ? (
@@ -403,9 +443,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
                             <span className="px-3 py-1 bg-slate-100 dark:bg-[#111C2E] text-slate-400 dark:text-slate-500 rounded-lg text-xs font-medium">
                               Скоро
                             </span>
-                          ) : !isUnlocked ? (
+                          ) : !access.isUnlocked ? (
                             <span
-                              title={`Модуль #${lesson.number} заблокирован. Для доступа сначала пройдите Модуль #${lesson.number - 1}`}
+                              title={`Модуль заблокирован: ${access.lockReason}`}
                               className="px-3 py-1 bg-slate-100 dark:bg-[#111C2E] text-slate-400 dark:text-slate-500 rounded-lg text-xs font-medium inline-flex items-center gap-1.5"
                             >
                               <Lock size={12} className="shrink-0" />

@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
-import { BookOpen, BarChart3, Users, Target } from 'lucide-react';
+import { BookOpen, BarChart3, Users, Target, Languages, CheckCircle2, Lock, ArrowRight } from 'lucide-react';
 import { LESSONS_DATA } from '../data/lessonsData';
 import { HANDBOOK_DATA } from '../data/handbookData';
 import { useAuth } from '../context/AuthContext';
+import { useModulePrerequisites, checkModuleAccess } from '../utils/modulePrerequisites';
 
 interface LessonsCatalogViewProps {
   onStartLesson: (lessonId: string) => void;
   onOpenHandbook?: (topicId: string) => void;
+  onOpenWortschatz?: (sectionId: number) => void;
   externalSearch?: string;
 }
 
 export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
   onStartLesson,
   onOpenHandbook,
+  onOpenWortschatz,
   externalSearch = '',
 }) => {
   const { progress, isAdmin } = useAuth();
+  const { viewedHandbookTopics, wortschatzProgress } = useModulePrerequisites();
   const [localSearch, setLocalSearch] = useState('');
   const [tabFilter, setTabFilter] = useState<'all' | 'a1_1' | 'a1_2' | 'completed' | 'exams'>('all');
 
@@ -148,12 +152,13 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
           const score = userProgress?.scorePercent ?? 0;
           const isExam = lesson.tags.includes('Экзамен') || lesson.titleRu.toLowerCase().includes('экзамен');
 
-          const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
-          const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
-
-          const matchingHandbookTopic = HANDBOOK_DATA.find(
-            (h) => h.relatedLessonId === lesson.id || h.topicNumber === lesson.number
-          ) || HANDBOOK_DATA[0];
+          const access = checkModuleAccess(
+            lesson,
+            progress,
+            isAdmin,
+            viewedHandbookTopics,
+            wortschatzProgress
+          );
 
           const formattedNumber = lesson.number < 10 ? `0${lesson.number}` : `${lesson.number}`;
 
@@ -161,24 +166,19 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
             <div
               key={lesson.id}
               id={`module-card-${lesson.id}`}
-              className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 flex flex-col justify-between gap-4 shadow-xs hover:shadow-md transition-shadow"
+              className={`bg-white dark:bg-[#0E1A2D] border ${
+                !access.isUnlocked && !lesson.isComingSoon
+                  ? 'border-slate-200/80 dark:border-slate-800/80 opacity-95'
+                  : 'border-slate-200/90 dark:border-slate-800'
+              } rounded-2xl p-5 flex flex-col justify-between gap-4 shadow-xs hover:shadow-md transition-shadow`}
             >
-              {/* Top part: 1. Number + Handbook link, 2. Titles, 3. Single Tag */}
-              <div className="flex flex-col gap-2.5">
-                {/* 1. Module Number (gray, unobtrusive) + Handbook icon-link */}
+              {/* Top part: 1. Number + Handbook link, 2. Titles, 3. Tags & Prerequisites */}
+              <div className="flex flex-col gap-3">
+                {/* 1. Module Number */}
                 <div className="flex items-center justify-between">
                   <span className="font-mono text-xs font-semibold text-[#94A3B8]">
-                    {formattedNumber}
+                    Модуль {formattedNumber}
                   </span>
-
-                  {/* Icon-link to Handbook: secondary action, does not compete with main button */}
-                  <button
-                    onClick={() => onOpenHandbook?.(matchingHandbookTopic.id)}
-                    className="p-1.5 text-slate-400 hover:text-[#3B82F6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors cursor-pointer"
-                    title={`Открыть в справочнике: ${matchingHandbookTopic.title}`}
-                  >
-                    <BookOpen className="w-3.5 h-3.5" />
-                  </button>
                 </div>
 
                 {/* 2. Title in German (bold Montserrat) + Subtitle in Russian (gray Manrope) */}
@@ -191,8 +191,8 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
                   </div>
                 </div>
 
-                {/* 3. Single Tag: only level (e.g. A1.1 / A1.2) or Exam, not four tags */}
-                <div className="pt-1">
+                {/* 3. Single Tag: Level or Exam */}
+                <div className="flex items-center justify-between gap-2 pt-0.5">
                   <span
                     className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full ${
                       isExam
@@ -202,15 +202,91 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
                   >
                     {isExam ? 'Экзамен A1' : lesson.difficulty}
                   </span>
+
+                  {!access.isUnlocked && !lesson.isComingSoon && (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-md border border-amber-200/60 dark:border-amber-900/40">
+                      <Lock className="w-3 h-3" />
+                      <span>Нужна подготовка</span>
+                    </span>
+                  )}
+                </div>
+
+                {/* Preparation Links Section */}
+                <div className="bg-slate-50 dark:bg-[#111C2E] border border-slate-200/70 dark:border-slate-800 rounded-xl p-2.5 flex flex-col gap-1.5">
+                  <div className="text-[10px] font-heading font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Подготовка к модулю
+                  </div>
+
+                  {/* 1. Handbook Topic Link */}
+                  {access.handbookTopic && (
+                    <button
+                      type="button"
+                      onClick={() => onOpenHandbook?.(access.handbookTopic!.id)}
+                      className={`w-full flex items-center justify-between p-1.5 px-2 rounded-lg text-xs transition-colors cursor-pointer text-left ${
+                        access.isHandbookViewed
+                          ? 'bg-white dark:bg-[#0B1526] hover:bg-slate-100 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200'
+                          : 'bg-blue-50/70 dark:bg-blue-950/30 hover:bg-blue-100/70 dark:hover:bg-blue-900/40 text-[#1E40AF] dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/40'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0 pr-2">
+                        <BookOpen className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                        <span className="truncate font-medium">
+                          Справочник: Тема #{access.handbookTopic.topicNumber || lesson.number}
+                        </span>
+                      </div>
+                      <span
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 ${
+                          access.isHandbookViewed
+                            ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+                            : 'bg-[#3B82F6] text-white'
+                        }`}
+                      >
+                        {access.isHandbookViewed ? 'Изучено ✓' : 'Открыть'}
+                      </span>
+                    </button>
+                  )}
+
+                  {/* 2. Wortschatz (Vocabulary) Topic Link - For odd lessons */}
+                  {access.wortschatzSection ? (
+                    <button
+                      type="button"
+                      onClick={() => onOpenWortschatz?.(access.wortschatzSection!.section_id)}
+                      className={`w-full flex items-center justify-between p-1.5 px-2 rounded-lg text-xs transition-colors cursor-pointer text-left ${
+                        access.isWortschatzPassed
+                          ? 'bg-white dark:bg-[#0B1526] hover:bg-slate-100 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200'
+                          : 'bg-amber-50/70 dark:bg-amber-950/30 hover:bg-amber-100/70 dark:hover:bg-amber-900/40 text-amber-900 dark:text-amber-200 border border-amber-200/60 dark:border-amber-800/40'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0 pr-2">
+                        <Languages className="w-3.5 h-3.5 text-[#EF1B2D] shrink-0" />
+                        <span className="truncate font-medium">
+                          Словарь: #{access.wortschatzSection.section_id} {access.wortschatzSection.title_ru}
+                        </span>
+                      </div>
+                      <span
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 ${
+                          access.isWortschatzPassed
+                            ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
+                            : 'bg-[#EF1B2D] text-white'
+                        }`}
+                      >
+                        {access.isWortschatzPassed ? `Сдан (${access.wortschatzScore}%) ✓` : 'Сдать тест'}
+                      </span>
+                    </button>
+                  ) : (
+                    <div className="text-[11px] text-slate-400 dark:text-slate-500 italic px-2 py-0.5">
+                      Словарь: закрепление пройденной лексики
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Bottom part: 4. Progress bar + 5. Main Action Button */}
-              <div className="flex flex-col gap-3.5 pt-2">
-                {/* 4. Progress: thin progress bar + percentage, status shown only via progress bar color */}
+              <div className="flex flex-col gap-3 pt-2">
+                {/* 4. Progress */}
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between text-[11px] font-mono text-[#94A3B8]">
-                    <span>Результат</span>
+                    <span>Результат модуля</span>
                     <span className={isPassed ? 'text-[#3B82F6] font-bold' : ''}>
                       {isPassed ? `${score}%` : userProgress ? `${score}%` : '0%'}
                     </span>
@@ -225,7 +301,7 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
                   </div>
                 </div>
 
-                {/* 5. One Main Action Button: dark navy background with white text */}
+                {/* 5. Main Action Button */}
                 {lesson.isComingSoon ? (
                   <button
                     disabled
@@ -233,19 +309,22 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
                   >
                     В разработке
                   </button>
-                ) : !isUnlocked ? (
+                ) : !access.isUnlocked ? (
                   <button
                     disabled
-                    className="w-full py-2.5 px-4 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 font-medium text-xs text-center cursor-not-allowed"
+                    title={`Для открытия модуля: ${access.lockReason}`}
+                    className="w-full py-2.5 px-4 rounded-lg bg-slate-100 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/60 text-slate-400 dark:text-slate-500 font-medium text-xs text-center cursor-not-allowed flex items-center justify-center gap-2 shadow-2xs"
                   >
-                    Заблокирован (пройдите #{lesson.number - 1})
+                    <Lock className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                    <span className="truncate">Заблокирован: {access.lockReason}</span>
                   </button>
                 ) : (
                   <button
                     onClick={() => onStartLesson(lesson.id)}
-                    className="w-full py-2.5 px-4 rounded-lg bg-[#0B1F3A] hover:bg-[#152e54] text-white font-medium text-xs md:text-sm text-center transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
+                    className="w-full py-2.5 px-4 rounded-lg bg-[#0B1F3A] hover:bg-[#152e54] text-white font-medium text-xs md:text-sm text-center transition-colors cursor-pointer shadow-xs active:scale-[0.99] flex items-center justify-center gap-2"
                   >
-                    {isPassed ? 'Повторить модуль' : isExam ? 'Начать экзамен' : 'Начать модуль'}
+                    <span>{isPassed ? 'Повторить модуль' : isExam ? 'Начать экзамен' : 'Начать модуль'}</span>
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                 )}
               </div>

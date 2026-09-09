@@ -3,6 +3,7 @@ import { HANDBOOK_DATA } from '../data/handbookData';
 import { LESSONS_DATA } from '../data/lessonsData';
 import { useAuth } from '../context/AuthContext';
 import { HandbookSection } from '../types';
+import { markHandbookTopicViewed, useModulePrerequisites, checkModuleAccess } from '../utils/modulePrerequisites';
 import {
   BookOpen,
   ChevronLeft,
@@ -28,6 +29,7 @@ type FilterCategory = 'all' | 'grammar' | 'vocabulary' | 'visa-tips' | 'A1.1' | 
 
 export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson, initialSectionId }) => {
   const { progress, isAdmin } = useAuth();
+  const { viewedHandbookTopics, wortschatzProgress } = useModulePrerequisites();
   const [selectedSectionId, setSelectedSectionId] = useState<string>(initialSectionId || HANDBOOK_DATA[0].id);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<FilterCategory>('all');
@@ -77,10 +79,13 @@ export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson, initi
   const prevSection = currentIndex > 0 ? HANDBOOK_DATA[currentIndex - 1] : null;
   const nextSection = currentIndex < HANDBOOK_DATA.length - 1 ? HANDBOOK_DATA[currentIndex + 1] : null;
 
-  // Auto scroll to top on section change
+  // Auto scroll to top on section change and mark topic as viewed
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [selectedSectionId]);
+    if (currentSection?.id) {
+      markHandbookTopicViewed(currentSection.id);
+    }
+  }, [selectedSectionId, currentSection?.id]);
 
   const handleSelectSection = (id: string) => {
     setSelectedSectionId(id);
@@ -486,8 +491,13 @@ export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson, initi
                 const relatedLesson = LESSONS_DATA.find((l) => l.id === currentSection.relatedLessonId);
                 if (!relatedLesson) return null;
 
-                const prevLesson = LESSONS_DATA.find((l) => l.number === relatedLesson.number - 1);
-                const isUnlocked = isAdmin || relatedLesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
+                const access = checkModuleAccess(
+                  relatedLesson,
+                  progress,
+                  isAdmin,
+                  viewedHandbookTopics,
+                  wortschatzProgress
+                );
 
                 if (relatedLesson.isComingSoon) {
                   return (
@@ -497,16 +507,16 @@ export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson, initi
                   );
                 }
 
-                if (!isUnlocked) {
+                if (!access.isUnlocked) {
                   return (
                     <button
                       disabled
                       type="button"
-                      title={`Тест заблокирован. Для доступа сначала пройдите Модуль #${relatedLesson.number - 1}`}
-                      className="text-xs font-semibold px-3 py-1.5 bg-slate-100 dark:bg-[#111C2E] text-slate-400 dark:text-slate-500 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 cursor-not-allowed"
+                      title={`Тест заблокирован: ${access.lockReason}`}
+                      className="text-xs font-semibold px-3 py-1.5 bg-slate-100 dark:bg-[#111C2E] text-slate-400 dark:text-slate-500 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 cursor-not-allowed shadow-2xs"
                     >
                       <Lock size={12} className="shrink-0 text-slate-400" />
-                      <span>Тест заблокирован (Модуль #{relatedLesson.number})</span>
+                      <span>Тест заблокирован ({access.lockReason})</span>
                     </button>
                   );
                 }
