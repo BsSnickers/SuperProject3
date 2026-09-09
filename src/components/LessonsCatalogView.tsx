@@ -50,37 +50,60 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
   }) || LESSONS_DATA[0];
 
   return (
-    <div id="lessons-catalog-view" className="p-4 md:p-8 max-w-7xl mx-auto flex flex-col gap-6 font-sans">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div className="font-heading font-bold text-xs uppercase tracking-widest text-[#3B82F6]">
-            КАТАЛОГ УРОКОВ
-          </div>
-          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#0B1F3A] dark:text-white mt-1">
-            Модули Goethe-Zertifikat A1
-          </h1>
-          <p className="text-xs sm:text-sm text-[#94A3B8] font-medium mt-0.5">
-            24 интерактивных модуля от начального уровня до экзаменационных симуляций.
-          </p>
+    <div id="lessons-catalog-view" className="flex flex-col font-sans text-[#0B1F3A] dark:text-[#F4F6F8]">
+      {/* Hero Banner with Cologne Cathedral - Scrollable, Rectangular Without Rounded Borders */}
+      <div
+        id="lessons-hero-banner"
+        className="w-full bg-white dark:bg-[#0B1526] shrink-0 box-border border-b border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden"
+      >
+        {/* Cologne Cathedral High-Resolution Image on the right with smooth fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-full md:w-3/5 pointer-events-none overflow-hidden">
+          <img
+            src="/images/cologne.jpg"
+            alt="Kölner Dom, Deutschland"
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-center opacity-85 dark:opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#0B1526] dark:via-[#0B1526]/85 dark:to-transparent" />
         </div>
 
-        {/* Quick progress indicator */}
-        <div className="hidden sm:flex items-center gap-3 bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 px-4 py-2.5 rounded-xl shadow-xs shrink-0">
-          <div className="text-right">
-            <div className="text-[10px] uppercase font-mono tracking-wider text-[#94A3B8]">Пройдено модулей</div>
-            <div className="font-heading font-bold text-sm text-[#0B1F3A] dark:text-white">
-              {Object.values(progress).filter((p: any) => p.passed).length} / {LESSONS_DATA.length}
+        {/* Banner Content Container */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 md:py-6 relative z-10">
+          <div className="max-w-2xl flex flex-col gap-2">
+            <div className="font-heading font-bold text-[11px] uppercase tracking-widest text-[#3B82F6]">
+              КАТАЛОГ ОБУЧЕНИЯ • GOETHE-ZERTIFIKAT A1
             </div>
-          </div>
-          <div className="w-10 h-10 rounded-full bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6] font-heading font-bold text-xs">
-            {Math.round((Object.values(progress).filter((p: any) => p.passed).length / LESSONS_DATA.length) * 100)}%
+
+            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#0B1F3A] dark:text-white leading-tight tracking-tight">
+              24 модуля к <span className="text-[#3B82F6]">сертификату</span> и уровню <span className="text-[#EF1B2D]">A1</span>.
+            </h1>
+
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
+              Пошаговые интерактивные уроки от начальных диалогов до комплексных экзаменационных тестов.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2.5 mt-0.5 border-t border-slate-200/70 dark:border-slate-800/70 text-xs font-medium text-slate-700 dark:text-slate-200">
+              <div className="flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <span>Пройдено: {Object.values(progress).filter((p: any) => p.passed).length} из {LESSONS_DATA.length} модулей</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <BarChart3 className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <span>Проходной балл ≥ 70%</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <span>A1.1 и A1.2 ступени</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-3">
+      {/* Main Content Area */}
+      <div className="p-4 md:p-8 max-w-7xl mx-auto w-full flex flex-col gap-6">
+        {/* Filter Tabs */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-3">
         <div className="flex flex-wrap items-center gap-1.5">
           {[
             { id: 'all', label: `Все модули (${LESSONS_DATA.length})` },
@@ -256,6 +279,7 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
         >
           Продолжить обучение →
         </button>
+      </div>
       </div>
     </div>
   );

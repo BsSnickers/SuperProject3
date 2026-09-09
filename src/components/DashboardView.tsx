@@ -67,12 +67,41 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Brandenburg Gate Image on the right with smooth fade */}
         <div className="absolute right-0 top-0 bottom-0 w-full md:w-3/5 pointer-events-none overflow-hidden">
           <img
-            src="/roman-kraft-g_gwdpsCVAY-unsplash.jpg"
-            alt="Brandenburger Tor"
-            className="w-full h-full object-cover object-center opacity-85 dark:opacity-40"
+            src="/images/brandenburger_tor.jpg"
+            alt="Brandenburger Tor Berlin"
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-[center_30%] md:object-[center_35%] translate-y-3 sm:translate-y-4 opacity-95 dark:opacity-45 transition-transform"
           />
-          {/* Subtle gradient overlay to ensure crisp text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#0B1526] dark:via-[#0B1526]/85 dark:to-transparent" />
+          {/* Softened gradient overlay (weakened white transition to show more of the photograph) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/55 to-transparent/10 dark:from-[#0B1526] dark:via-[#0B1526]/55 dark:to-transparent/10" />
+        </div>
+
+        {/* Handwritten script above the gate matching reference - positioned lower and further right */}
+        <div className="hidden lg:flex flex-col items-start absolute right-9 xl:right-9 top-5 xl:top-5 z-20 pointer-events-none -rotate-6 select-none">
+          <span className="font-['Caveat',cursive] text-2xl xl:text-3xl font-bold text-[#0B1F3A] dark:text-blue-200 tracking-wide leading-tight drop-shadow-xs">
+            Deutsch
+          </span>
+          <span className="font-['Caveat',cursive] text-2xl xl:text-3xl font-bold text-[#0B1F3A] dark:text-blue-200 tracking-wide leading-tight drop-shadow-xs pl-2">
+            öffnet Türen ♡
+          </span>
+        </div>
+
+        {/* Compact red circle in the bottom-right corner matching reference - moved lower */}
+        <div
+          id="dashboard-hero-red-circle"
+          className="hidden sm:block absolute -bottom-19 -right-8 sm:-bottom-19 sm:-right-10 md:-bottom-19 md:-right-10 w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-[#EF1B2D] shadow-md z-20 pointer-events-none select-none"
+        />
+
+        {/* Text «Больше, чем просто язык» positioned lower in the corner of the hero banner */}
+        <div
+          id="dashboard-hero-corner-text"
+          className="hidden sm:block absolute bottom-1.5 right-2 sm:bottom-2 sm:right-2.5 md:bottom-2 md:right-3 z-25 pointer-events-none select-none text-white text-left"
+        >
+          <div className="font-heading font-bold text-[12px] sm:text-[13px] md:text-xs leading-tight tracking-tight drop-shadow-xs">
+            Больше,<br />
+            чем просто<br />
+            язык
+          </div>
         </div>
 
         {/* Banner Content Container */}
@@ -83,9 +112,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               МОДУЛИ A1
             </div>
 
-            {/* Heading */}
+            {/* Heading matching reference: Dein Weg in navy, beginnt hier. in red */}
             <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#0B1F3A] dark:text-white leading-tight tracking-tight">
-              Dein Weg <span className="text-[#EF1B2D]">beginnt</span> hier.
+              Dein Weg <span className="text-[#EF1B2D]">beginnt hier.</span>
             </h1>
 
             {/* Subtitle */}

@@ -82,34 +82,81 @@ export const AdminView: React.FC = () => {
   const ausbildungInWork = users.filter((u) => u.ausbildungStatus === 'in_progress' || u.ausbildungStatus === 'in_review').length;
 
   return (
-    <div id="admin-view" className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto flex flex-col gap-6 font-sans text-[#0B1F3A] dark:text-slate-100 transition-colors">
-      {/* Top Header Card */}
-      <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div className="font-heading font-bold text-xs uppercase tracking-widest text-[#3B82F6] mb-1.5 flex items-center gap-1.5">
-            <ShieldCheck size={14} />
-            <span>Административная консоль • Управление программами</span>
-          </div>
-          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-4xl text-[#0B1F3A] dark:text-white tracking-tight">
-            Реестр студентов и статус дел
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-[#94A3B8] font-medium mt-1.5 max-w-2xl leading-relaxed">
-            Прямое редактирование этапов визовых заявлений Au-Pair и Ausbildung. Все изменения синхронизируются в реальном времени.
-          </p>
+    <div id="admin-view" className="flex flex-col font-sans text-[#0B1F3A] dark:text-slate-100 transition-colors">
+      {/* Hero Banner with Berlin Reichstag - Scrollable, Rectangular Without Rounded Borders */}
+      <div
+        id="admin-hero-banner"
+        className="w-full bg-white dark:bg-[#0B1526] shrink-0 box-border border-b border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden"
+      >
+        {/* Berlin Reichstag High-Resolution Image on the right with smooth fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-full md:w-3/5 pointer-events-none overflow-hidden">
+          <img
+            src="/images/reichstag.jpg"
+            alt="Reichstag & Regierungsviertel Berlin, Deutschland"
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-center opacity-85 dark:opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#0B1526] dark:via-[#0B1526]/85 dark:to-transparent" />
         </div>
 
-        {/* Search */}
-        <div className="relative min-w-[260px] sm:min-w-[300px]">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Поиск студента или email..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/80 text-xs text-[#0B1F3A] dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111C2E] focus:ring-2 focus:ring-[#3B82F6]/30 focus:border-[#3B82F6] rounded-xl transition-all"
-          />
+        {/* Banner Content Container */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 md:py-6 relative z-10">
+          <div className="max-w-2xl flex flex-col gap-2">
+            <div className="font-heading font-bold text-[11px] uppercase tracking-widest text-[#3B82F6]">
+              АДМИНИСТРАТИВНАЯ ПАНЕЛЬ • ДЕЛА СТУДЕНТОВ
+            </div>
+
+            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#0B1F3A] dark:text-white leading-tight tracking-tight">
+              Управление делами и <span className="text-[#3B82F6]">программами</span> переезда.
+            </h1>
+
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
+              Реестр слушателей, синхронизация этапов Au-Pair и Ausbildung, контроль визовых документов в реальном времени.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2.5 mt-0.5 border-t border-slate-200/70 dark:border-slate-800/70 text-xs font-medium text-slate-700 dark:text-slate-200">
+              <div className="flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <span>Всего студентов: {totalStudents}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#3B82F6]"></span>
+                <span>Au-Pair в работе: {auPairInWork}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#EF1B2D]"></span>
+                <span>Ausbildung в работе: {ausbildungInWork}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Main Content Area */}
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full flex flex-col gap-6">
+        {/* Search Row & Quick Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="font-heading font-bold text-lg text-[#0B1F3A] dark:text-white">
+              Реестр заявлений слушателей
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+              Выберите студента для просмотра или обновления этапа и статуса дела
+            </p>
+          </div>
+
+          {/* Search */}
+          <div className="relative min-w-[260px] sm:min-w-[300px]">
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Поиск студента или email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/80 text-xs text-[#0B1F3A] dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:bg-white dark:focus:bg-[#111C2E] focus:ring-2 focus:ring-[#3B82F6]/30 focus:border-[#3B82F6] rounded-xl transition-all shadow-xs"
+            />
+          </div>
+        </div>
 
       {/* Metrics Row: 3 Rounded Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -247,6 +294,7 @@ export const AdminView: React.FC = () => {
             </tbody>
           </table>
         </div>
+      </div>
       </div>
 
       {/* Edit Status Modal */}

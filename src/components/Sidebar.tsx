@@ -47,7 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'wortschatz' as NavTab,
-      label: 'Практика',
+      label: 'Словарь',
       icon: Languages,
     },
     {

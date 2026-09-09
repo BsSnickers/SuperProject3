@@ -52,12 +52,12 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
       className="sticky top-0 z-30 h-16 min-h-[64px] max-h-[64px] shrink-0 box-border bg-white dark:bg-[#0B1526] border-b border-slate-200/80 dark:border-slate-800/80 px-4 md:px-8 flex items-center justify-between gap-4 transition-colors"
     >
       {/* Left: App Title & Motto */}
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 shrink-0">
         {onOpenMobileMenu && (
           <button
             id="header-mobile-menu-btn"
             onClick={onOpenMobileMenu}
-            className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
+            className="md:hidden p-1.5 sm:p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer shrink-0"
             title="Открыть меню"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,28 +65,28 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             </svg>
           </button>
         )}
-        <div className="flex flex-col">
-          <span className="font-heading font-bold text-base md:text-lg text-[#0B1F3A] dark:text-white tracking-tight leading-tight">
+        <div className="flex flex-col min-w-0 justify-center">
+          <span className="font-heading font-bold text-sm sm:text-base lg:text-lg text-[#0B1F3A] dark:text-white tracking-tight leading-tight whitespace-nowrap truncate">
             Delfi Training Platform
           </span>
-          <span className="text-[11px] md:text-xs text-[#94A3B8] font-normal leading-tight hidden sm:block">
+          <span className="text-[10px] sm:text-[11px] lg:text-xs text-[#94A3B8] font-normal leading-tight whitespace-nowrap truncate hidden sm:block">
             Lernen. Wachsen. Neue Möglichkeiten.
           </span>
         </div>
       </div>
 
       {/* Right: Search, Notification, Theme, User Avatar & Menu */}
-      <div className="flex items-center gap-2.5 md:gap-4 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-4 shrink-0 min-w-0">
         {/* Search Pill Input */}
-        <div className="relative hidden sm:block w-52 md:w-80 lg:w-96">
+        <div className="relative hidden sm:block w-36 sm:w-48 md:w-56 lg:w-72 xl:w-80 transition-all min-w-0">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             id="global-search-input"
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange?.(e.target.value)}
-            placeholder="Поиск по модулям, темам, грамматике..."
-            className="w-full pl-9 pr-4 py-2 bg-[#F4F6F8] dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/60 rounded-full text-xs text-[#0B1F3A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/30 focus:border-[#3B82F6] transition-all"
+            placeholder="Поиск по модулям, темам..."
+            className="w-full pl-9 pr-4 py-2 bg-[#F4F6F8] dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/60 rounded-full text-xs text-[#0B1F3A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/30 focus:border-[#3B82F6] transition-all truncate"
           />
         </div>
 

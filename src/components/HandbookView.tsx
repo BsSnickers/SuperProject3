@@ -124,57 +124,83 @@ export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson, initi
   };
 
   return (
-    <div id="handbook-spravochnik-view" className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto flex flex-col gap-6 font-sans transition-colors text-[#0B1F3A] dark:text-[#F4F6F8]">
-      {/* Top Header Card */}
-      <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div className="font-heading font-bold text-xs uppercase tracking-widest text-[#3B82F6] mb-1.5 flex items-center gap-1.5">
-            <BookOpen size={14} />
-            <span>Официальный академический свод • 24 темы курса A1</span>
-          </div>
-          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-4xl text-[#0B1F3A] dark:text-white tracking-tight">
-            Справочник и База знаний A1
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-[#94A3B8] font-medium mt-1.5 max-w-3xl leading-relaxed">
-            Полный структурированный свод всех грамматических правил, таблиц спряжения, предлогов и профильного словарного запаса.
-          </p>
+    <div id="handbook-spravochnik-view" className="flex flex-col font-sans text-[#0B1F3A] dark:text-[#F4F6F8]">
+      {/* Hero Banner with Dresden Frauenkirche - Scrollable, Rectangular Without Rounded Borders */}
+      <div
+        id="handbook-hero-banner"
+        className="w-full bg-white dark:bg-[#0B1526] shrink-0 box-border border-b border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden"
+      >
+        {/* Dresden Frauenkirche High-Resolution Image on the right with smooth fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-full md:w-3/5 pointer-events-none overflow-hidden">
+          <img
+            src="/images/dresden.jpg"
+            alt="Frauenkirche Dresden, Deutschland"
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-center opacity-85 dark:opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#0B1526] dark:via-[#0B1526]/85 dark:to-transparent" />
         </div>
 
-        {/* Global Action Tools */}
-        <div className="flex items-center gap-2 shrink-0 flex-wrap">
-          <button
-            id="handbook-copy-btn"
-            type="button"
-            onClick={handleCopySummary}
-            className="px-3.5 py-2 bg-white dark:bg-[#111C2E] hover:bg-slate-50 dark:hover:bg-slate-700 text-[#0B1F3A] dark:text-slate-100 font-semibold text-xs rounded-xl border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
-            title="Скопировать текущий раздел в буфер"
-          >
-            {copiedNotification ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
-            <span>{copiedNotification ? 'Скопировано' : 'Копировать'}</span>
-          </button>
+        {/* Banner Content Container */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 md:py-6 relative z-10">
+          <div className="max-w-2xl flex flex-col gap-2">
+            <div className="font-heading font-bold text-[11px] uppercase tracking-widest text-[#3B82F6]">
+              СПРАВОЧНИК &amp; БАЗА ЗНАНИЙ A1
+            </div>
 
-          <button
-            id="handbook-download-btn"
-            type="button"
-            onClick={handleDownloadTXT}
-            className="px-3.5 py-2 bg-[#0B1F3A] hover:bg-[#111C2E] dark:bg-[#3B82F6] dark:hover:bg-blue-600 text-white font-semibold text-xs rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
-            title="Скачать конспект темы"
-          >
-            <Download size={14} />
-            <span>.TXT ↓</span>
-          </button>
+            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#0B1F3A] dark:text-white leading-tight tracking-tight">
+              Академический <span className="text-[#3B82F6]">свод правил</span> и грамматики.
+            </h1>
 
-          <button
-            type="button"
-            onClick={handlePrint}
-            title="Распечатать пособие"
-            className="px-3.5 py-2 bg-white dark:bg-[#111C2E] hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs rounded-xl border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
-          >
-            <Printer size={14} />
-            <span>Печать</span>
-          </button>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
+              24 структурированные темы: таблицы падежей, спряжения глаголов, предлоги времени и места.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2.5 mt-0.5 border-t border-slate-200/70 dark:border-slate-800/70 text-xs font-medium text-slate-700 dark:text-slate-200">
+              <div className="flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <span>24 раздела теории</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <span>Наглядные таблицы и примеры</span>
+              </div>
+              <div className="flex items-center gap-2 ml-auto">
+                <button
+                  type="button"
+                  onClick={handleCopySummary}
+                  className="px-2.5 py-1 bg-white/90 dark:bg-[#111C2E] hover:bg-slate-100 text-[#0B1F3A] dark:text-slate-100 text-[11px] font-semibold rounded-lg border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
+                  title="Скопировать текущий раздел"
+                >
+                  {copiedNotification ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                  <span>{copiedNotification ? 'Скопировано' : 'Копировать'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownloadTXT}
+                  className="px-2.5 py-1 bg-[#0B1F3A] hover:bg-[#152e54] dark:bg-[#3B82F6] text-white text-[11px] font-semibold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                  title="Скачать конспект темы"
+                >
+                  <Download size={12} />
+                  <span>.TXT</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="px-2.5 py-1 bg-white/90 dark:bg-[#111C2E] hover:bg-slate-100 text-slate-700 dark:text-slate-200 text-[11px] font-semibold rounded-lg border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
+                  title="Печать"
+                >
+                  <Printer size={12} />
+                  <span>Печать</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Main Content Area */}
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full flex flex-col gap-6">
 
       {/* Quick Navigation Control Strip (Sticky at top-16 below TopHeader) */}
       <div className="sticky top-16 z-20 bg-white/95 dark:bg-[#0E1A2D]/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 rounded-2xl p-2.5 sm:p-3 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
@@ -646,6 +672,7 @@ export const HandbookView: React.FC<HandbookViewProps> = ({ onStartLesson, initi
             )}
           </div>
         </article>
+      </div>
       </div>
     </div>
   );

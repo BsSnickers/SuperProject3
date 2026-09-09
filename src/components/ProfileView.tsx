@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Lock, Flame, CheckCircle2, Award, HelpCircle, Mail, ShieldCheck, Calendar, ArrowRight, BookOpen } from 'lucide-react';
+import { Lock, Flame, CheckCircle2, Award, HelpCircle, Mail, ShieldCheck, Calendar, ArrowRight, BookOpen, BarChart3 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { WeeklyProgressCharts } from './WeeklyProgressCharts';
 import { calculateRealAnalytics, RealAnalyticsSummary } from '../utils/analytics';
@@ -39,6 +39,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
   const wortschatzPassedCount = useMemo(() => {
     return Object.values(wortschatzProgress).filter((p) => p?.passed).length;
   }, [wortschatzProgress]);
+
+  const totalWordsLearned = wortschatzPassedCount * 50;
 
   const analytics: RealAnalyticsSummary = useMemo(() => {
     return calculateRealAnalytics(profile, progress);
@@ -101,9 +103,65 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
   };
 
   return (
-    <div id="profile-view" className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto flex flex-col gap-8 font-sans transition-colors">
-      {/* Editorial Profile Header Card */}
-      <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div id="profile-view" className="flex flex-col font-sans transition-colors text-[#0B1F3A] dark:text-[#F4F6F8]">
+      {/* Hero Banner with Bavarian Alps - Scrollable, Rectangular Without Rounded Borders */}
+      <div
+        id="profile-hero-banner"
+        className="w-full bg-white dark:bg-[#0B1526] shrink-0 box-border border-b border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden"
+      >
+        {/* Bavarian Alps High-Resolution Image on the right with smooth fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-full md:w-3/5 pointer-events-none overflow-hidden">
+          <img
+            src="/images/alps.jpg"
+            alt="Bayerische Alpen & Königssee, Deutschland"
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-center opacity-85 dark:opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 to-transparent dark:from-[#0B1526] dark:via-[#0B1526]/85 dark:to-transparent" />
+        </div>
+
+        {/* Banner Content Container */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 md:py-6 relative z-10">
+          <div className="max-w-2xl flex flex-col gap-2">
+            <div className="font-heading font-bold text-[11px] uppercase tracking-widest text-[#3B82F6]">
+              ЛИЧНЫЙ КАБИНЕТ • УЧЕТНАЯ ЗАПИСЬ
+            </div>
+
+            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#0B1F3A] dark:text-white leading-tight tracking-tight flex items-center gap-3">
+              <span>{profile?.displayName || 'Студент Delfi'}</span>
+              {profile?.role === 'admin' && (
+                <span className="text-[10px] uppercase tracking-wider bg-[#3B82F6] text-white px-2.5 py-0.5 rounded-full font-bold shadow-xs">
+                  Куратор
+                </span>
+              )}
+            </h1>
+
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
+              Персональный мониторинг успеваемости, сданные модули, визовые программы и статистика активности.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2.5 mt-0.5 border-t border-slate-200/70 dark:border-slate-800/70 text-xs font-medium text-slate-700 dark:text-slate-200">
+              <div className="flex items-center gap-1.5">
+                <BookOpen className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <span>Сдано: {passedLessonsCount} из {totalLessonsCount} модулей</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <BarChart3 className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <span>Средний балл: {avgScore}%</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Award className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
+                <span>Слов в запасе: {totalWordsLearned}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto w-full flex flex-col gap-8">
+        {/* Editorial Profile Header Card */}
+        <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="font-heading font-bold text-xs uppercase tracking-widest text-[#3B82F6] mb-1.5 flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5" />
@@ -496,6 +554,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
