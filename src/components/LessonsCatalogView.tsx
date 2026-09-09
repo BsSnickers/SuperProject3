@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, BarChart3, Users, Target } from 'lucide-react';
 import { LESSONS_DATA } from '../data/lessonsData';
 import { HANDBOOK_DATA } from '../data/handbookData';
 import { useAuth } from '../context/AuthContext';
@@ -7,12 +7,19 @@ import { useAuth } from '../context/AuthContext';
 interface LessonsCatalogViewProps {
   onStartLesson: (lessonId: string) => void;
   onOpenHandbook?: (topicId: string) => void;
+  externalSearch?: string;
 }
 
-export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({ onStartLesson, onOpenHandbook }) => {
+export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({
+  onStartLesson,
+  onOpenHandbook,
+  externalSearch = '',
+}) => {
   const { progress, isAdmin } = useAuth();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [localSearch, setLocalSearch] = useState('');
   const [tabFilter, setTabFilter] = useState<'all' | 'a1_1' | 'a1_2' | 'completed' | 'exams'>('all');
+
+  const searchTerm = externalSearch || localSearch;
 
   const filteredLessons = LESSONS_DATA.filter((lesson) => {
     const userProgress = progress[lesson.id];
@@ -36,202 +43,219 @@ export const LessonsCatalogView: React.FC<LessonsCatalogViewProps> = ({ onStartL
     return true;
   });
 
+  // Find next recommended lesson to continue learning
+  const nextLessonToContinue = LESSONS_DATA.find((lesson) => {
+    const p = progress[lesson.id];
+    return !p?.passed && !lesson.isComingSoon;
+  }) || LESSONS_DATA[0];
+
   return (
-    <div id="lessons-catalog-view" className="p-6 md:p-10 max-w-7xl mx-auto flex flex-col gap-8 font-sans">
-      {/* Header */}
-      <div className="border-b border-zinc-300 dark:border-zinc-800 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div id="lessons-catalog-view" className="p-4 md:p-8 max-w-7xl mx-auto flex flex-col gap-6 font-sans">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">
-            § Goethe-Zertifikat A1 • Модули A1.1 & A1.2
+          <div className="font-heading font-bold text-xs uppercase tracking-widest text-[#3B82F6]">
+            КАТАЛОГ УРОКОВ
           </div>
-          <h1 className="font-serif text-3xl md:text-5xl font-normal text-zinc-950 dark:text-white tracking-tight">
-            Каталог учебных модулей
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-[#0B1F3A] dark:text-white mt-1">
+            Модули Goethe-Zertifikat A1
           </h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 font-normal mt-2 max-w-2xl">
-            {LESSONS_DATA.length} тематических модулей с прогрессивным количеством вопросов (6–15) и комплексными экзаменами в конце ступеней A1.1 и A1.2.
+          <p className="text-xs sm:text-sm text-[#94A3B8] font-medium mt-0.5">
+            24 интерактивных модуля от начального уровня до экзаменационных симуляций.
           </p>
         </div>
 
-        {/* Search Input */}
-        <div className="min-w-[280px]">
-          <input
-            id="lesson-search-input"
-            type="text"
-            placeholder="Поиск по теме, грамматике или лексике..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 font-mono text-xs text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-black dark:focus:border-blue-400 rounded-none"
-          />
+        {/* Quick progress indicator */}
+        <div className="hidden sm:flex items-center gap-3 bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 px-4 py-2.5 rounded-xl shadow-xs shrink-0">
+          <div className="text-right">
+            <div className="text-[10px] uppercase font-mono tracking-wider text-[#94A3B8]">Пройдено модулей</div>
+            <div className="font-heading font-bold text-sm text-[#0B1F3A] dark:text-white">
+              {Object.values(progress).filter((p: any) => p.passed).length} / {LESSONS_DATA.length}
+            </div>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6] font-heading font-bold text-xs">
+            {Math.round((Object.values(progress).filter((p: any) => p.passed).length / LESSONS_DATA.length) * 100)}%
+          </div>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-1 border-b border-zinc-300 dark:border-zinc-800 pb-px font-mono text-xs">
-        {[
-          { id: 'all', label: `Все модули (${LESSONS_DATA.length})` },
-          { id: 'a1_1', label: 'Ступень A1.1 (12)' },
-          { id: 'a1_2', label: 'Ступень A1.2 (11)' },
-          { id: 'exams', label: 'Экзамены (2)' },
-          { id: 'completed', label: 'Сданные' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setTabFilter(tab.id as any)}
-            className={`px-4 py-2.5 uppercase tracking-wider transition-colors rounded-none border-t border-x ${
-              tabFilter === tab.id
-                ? 'bg-black dark:bg-zinc-100 text-white dark:text-zinc-950 border-black dark:border-zinc-100 font-bold'
-                : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white border-zinc-300 dark:border-zinc-800'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {[
+            { id: 'all', label: `Все модули (${LESSONS_DATA.length})` },
+            { id: 'a1_1', label: 'Ступень A1.1' },
+            { id: 'a1_2', label: 'Ступень A1.2' },
+            { id: 'exams', label: 'Экзамены' },
+            { id: 'completed', label: 'Сданные' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setTabFilter(tab.id as any)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                tabFilter === tab.id
+                  ? 'bg-[#0B1F3A] text-white dark:bg-white dark:text-[#0B1F3A] font-semibold'
+                  : 'bg-white dark:bg-[#111C2E] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/60'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Local Search Input on small screens or fallback */}
+        {!externalSearch && (
+          <div className="sm:hidden w-full">
+            <input
+              type="text"
+              placeholder="Поиск по модулям..."
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
+              className="w-full px-3 py-1.5 text-xs bg-white dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700 rounded-full"
+            />
+          </div>
+        )}
       </div>
 
-      {/* Grid of Lessons */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* 2.4 Grid of Module Cards: 3 columns, spacing 20-24px, 5 blocks per card */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
         {filteredLessons.map((lesson) => {
           const userProgress = progress[lesson.id];
           const isPassed = userProgress?.passed;
-          const score = userProgress?.scorePercent;
+          const score = userProgress?.scorePercent ?? 0;
           const isExam = lesson.tags.includes('Экзамен') || lesson.titleRu.toLowerCase().includes('экзамен');
 
           const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
           const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
 
+          const matchingHandbookTopic = HANDBOOK_DATA.find(
+            (h) => h.relatedLessonId === lesson.id || h.topicNumber === lesson.number
+          ) || HANDBOOK_DATA[0];
+
+          const formattedNumber = lesson.number < 10 ? `0${lesson.number}` : `${lesson.number}`;
+
           return (
             <div
               key={lesson.id}
-              className={`border p-6 flex flex-col justify-between gap-6 transition-colors ${
-                isExam
-                  ? 'border-amber-400 dark:border-amber-500/60 bg-amber-50/30 dark:bg-amber-950/20'
-                  : isPassed
-                  ? 'border-zinc-900 dark:border-emerald-500/50 bg-white dark:bg-zinc-900'
-                  : !isUnlocked || lesson.isComingSoon
-                  ? 'border-zinc-200 dark:border-zinc-800/60 bg-[#FAFAFA] dark:bg-zinc-950/50'
-                  : 'border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-black dark:hover:border-blue-400'
-              }`}
+              id={`module-card-${lesson.id}`}
+              className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 flex flex-col justify-between gap-4 shadow-xs hover:shadow-md transition-shadow"
             >
-              <div>
-                {/* Header: Module Number & Status */}
-                <div className="flex items-center justify-between pb-3 border-b border-zinc-200 dark:border-zinc-800 mb-4 font-mono text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="text-zinc-500 dark:text-zinc-400">
-                      [#{lesson.number < 10 ? `0${lesson.number}` : lesson.number}]
-                    </span>
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold ${lesson.difficulty === 'A1.1' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200' : 'bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800'}`}>
-                      {lesson.difficulty}
-                    </span>
-                    {isExam && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 uppercase">
-                        [Экзамен]
-                      </span>
-                    )}
+              {/* Top part: 1. Number + Handbook link, 2. Titles, 3. Single Tag */}
+              <div className="flex flex-col gap-2.5">
+                {/* 1. Module Number (gray, unobtrusive) + Handbook icon-link */}
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-semibold text-[#94A3B8]">
+                    {formattedNumber}
+                  </span>
+
+                  {/* Icon-link to Handbook: secondary action, does not compete with main button */}
+                  <button
+                    onClick={() => onOpenHandbook?.(matchingHandbookTopic.id)}
+                    className="p-1.5 text-slate-400 hover:text-[#3B82F6] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors cursor-pointer"
+                    title={`Открыть в справочнике: ${matchingHandbookTopic.title}`}
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* 2. Title in German (bold Montserrat) + Subtitle in Russian (gray Manrope) */}
+                <div>
+                  <h3 className="font-heading font-bold text-base md:text-lg text-[#0B1F3A] dark:text-white leading-snug">
+                    {lesson.titleDe}
+                  </h3>
+                  <div className="text-xs text-[#94A3B8] font-normal mt-1 leading-normal">
+                    {lesson.titleRu}
                   </div>
-
-                  {isPassed ? (
-                    <span className="font-bold text-zinc-950 dark:text-emerald-400 bg-zinc-100 dark:bg-emerald-950/80 px-2 py-0.5 border border-zinc-300 dark:border-emerald-700 uppercase text-[10px]">
-                      [Сдано: {score}%]
-                    </span>
-                  ) : lesson.isComingSoon ? (
-                    <span className="text-zinc-400 uppercase text-[10px]">
-                      Скоро
-                    </span>
-                  ) : isUnlocked ? (
-                    <span className="text-[#0033CC] dark:text-blue-400 uppercase font-bold text-[10px]">
-                      Доступен
-                    </span>
-                  ) : (
-                    <span className="text-zinc-400 dark:text-zinc-500 uppercase text-[10px]">
-                      Заблокирован
-                    </span>
-                  )}
                 </div>
 
-                <h3 className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mb-1 leading-tight">
-                  {lesson.titleDe}
-                </h3>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400 mb-3 font-medium">
-                  {lesson.titleRu}
-                </div>
-                <p className="text-xs text-zinc-600 dark:text-zinc-300 line-clamp-3 mb-4 leading-relaxed">
-                  {lesson.description}
-                </p>
-
-                {/* Meta details */}
-                <div className="grid grid-cols-2 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 font-mono text-[10px] text-zinc-600 dark:text-zinc-400 text-center mb-4">
-                  <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-2 font-bold text-zinc-900 dark:text-white">{lesson.questionsCount} вопросов</div>
-                  <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-2">Порог {lesson.passThreshold}%</div>
-                </div>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1 font-mono text-[9px] uppercase">
-                  {lesson.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="border border-zinc-200 dark:border-zinc-800 px-1.5 py-0.5 text-zinc-500 dark:text-zinc-400 bg-[#FAFAFA] dark:bg-zinc-950"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                {/* 3. Single Tag: only level (e.g. A1.1 / A1.2) or Exam, not four tags */}
+                <div className="pt-1">
+                  <span
+                    className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full ${
+                      isExam
+                        ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                        : 'bg-[#F4F6F8] dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
+                    {isExam ? 'Экзамен A1' : lesson.difficulty}
+                  </span>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col gap-2">
-                {/* Open Handbook Button */}
-                {(() => {
-                  const matchingHandbookTopic = HANDBOOK_DATA.find(
-                    (h) => h.relatedLessonId === lesson.id || h.topicNumber === lesson.number
-                  ) || HANDBOOK_DATA[0];
+              {/* Bottom part: 4. Progress bar + 5. Main Action Button */}
+              <div className="flex flex-col gap-3.5 pt-2">
+                {/* 4. Progress: thin progress bar + percentage, status shown only via progress bar color */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-[#94A3B8]">
+                    <span>Результат</span>
+                    <span className={isPassed ? 'text-[#3B82F6] font-bold' : ''}>
+                      {isPassed ? `${score}%` : userProgress ? `${score}%` : '0%'}
+                    </span>
+                  </div>
+                  <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        isPassed || score > 0 ? 'bg-[#3B82F6]' : 'bg-slate-200 dark:bg-slate-700'
+                      }`}
+                      style={{ width: isPassed ? `${score}%` : score > 0 ? `${score}%` : '0%' }}
+                    />
+                  </div>
+                </div>
 
-                  return (
-                    <button
-                      id={`lesson-handbook-btn-${lesson.id}`}
-                      type="button"
-                      onClick={() => onOpenHandbook?.(matchingHandbookTopic.id)}
-                      className="w-full py-2.5 px-3 font-mono text-xs uppercase tracking-wider font-bold transition-colors border text-center flex items-center justify-center gap-1.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 border-zinc-300 dark:border-zinc-700 cursor-pointer shadow-2xs"
-                      title={`Открыть в справочнике: ${matchingHandbookTopic.title}`}
-                    >
-                      <BookOpen size={13} className="text-zinc-700 dark:text-zinc-300 shrink-0" />
-                      <span>Открыть справочник →</span>
-                    </button>
-                  );
-                })()}
-
-                {/* Open Module Button */}
+                {/* 5. One Main Action Button: dark navy background with white text */}
                 {lesson.isComingSoon ? (
                   <button
                     disabled
-                    className="w-full py-2.5 px-3 bg-zinc-100 dark:bg-zinc-950 text-zinc-400 dark:text-zinc-600 font-mono text-xs uppercase cursor-not-allowed border border-zinc-200 dark:border-zinc-800"
+                    className="w-full py-2.5 px-4 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 font-medium text-xs text-center cursor-not-allowed"
                   >
-                    [В разработке]
+                    В разработке
                   </button>
                 ) : !isUnlocked ? (
                   <button
                     disabled
-                    className="w-full py-2.5 px-3 bg-zinc-100 dark:bg-zinc-950 text-zinc-400 dark:text-zinc-600 font-mono text-xs uppercase cursor-not-allowed border border-zinc-200 dark:border-zinc-800"
+                    className="w-full py-2.5 px-4 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 font-medium text-xs text-center cursor-not-allowed"
                   >
-                    [Нужен Модуль #{lesson.number - 1}]
+                    Заблокирован (пройдите #{lesson.number - 1})
                   </button>
                 ) : (
                   <button
                     onClick={() => onStartLesson(lesson.id)}
-                    className={`w-full py-2.5 px-3 font-mono text-xs uppercase tracking-wider font-bold transition-colors border text-center cursor-pointer shadow-2xs ${
-                      isExam
-                        ? 'bg-amber-600 hover:bg-amber-700 text-white border-amber-700'
-                        : isPassed
-                        ? 'bg-emerald-700 hover:bg-emerald-600 text-white border-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:border-emerald-500'
-                        : 'bg-zinc-950 dark:bg-[#0033CC] hover:bg-zinc-800 dark:hover:bg-blue-600 text-white border-zinc-950 dark:border-blue-500'
-                    }`}
+                    className="w-full py-2.5 px-4 rounded-lg bg-[#0B1F3A] hover:bg-[#152e54] text-white font-medium text-xs md:text-sm text-center transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
                   >
-                    {isPassed ? 'Повторить модуль →' : isExam ? 'Начать экзамен →' : 'Открыть модуль →'}
+                    {isPassed ? 'Повторить модуль' : isExam ? 'Начать экзамен' : 'Начать модуль'}
                   </button>
                 )}
               </div>
             </div>
           );
         })}
+      </div>
+
+      {/* 2.5 Bottom CTA Banner: Target icon, Title, Subtitle, Red CTA Button */}
+      <div
+        id="bottom-cta-banner"
+        className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-red-50 dark:bg-red-950/50 flex items-center justify-center shrink-0 text-[#EF1B2D]">
+            <Target className="w-6 h-6" />
+          </div>
+          <div className="flex flex-col">
+            <h3 className="font-heading font-bold text-base md:text-lg text-[#0B1F3A] dark:text-white">
+              Маленькие шаги к большим возможностям.
+            </h3>
+            <p className="text-xs md:text-sm text-[#94A3B8] font-normal mt-0.5">
+              Изучай немецкий. Открывай мир. Строй своё будущее вместе с Delfi.
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => onStartLesson(nextLessonToContinue.id)}
+          className="w-full md:w-auto bg-[#EF1B2D] hover:bg-[#d81424] text-white font-semibold text-xs md:text-sm px-6 py-3 rounded-lg shadow-sm transition-colors cursor-pointer shrink-0 text-center active:scale-95"
+        >
+          Продолжить обучение →
+        </button>
       </div>
     </div>
   );

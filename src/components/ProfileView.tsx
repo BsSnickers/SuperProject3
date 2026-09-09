@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Lock, BookOpen } from 'lucide-react';
+import { Lock, Flame, CheckCircle2, Award, HelpCircle, Mail, ShieldCheck, Calendar, ArrowRight, BookOpen } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { WeeklyProgressCharts } from './WeeklyProgressCharts';
 import { calculateRealAnalytics, RealAnalyticsSummary } from '../utils/analytics';
@@ -75,7 +75,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
     setResending(true);
     try {
       await sendVerificationEmail();
-      setStatusNotice('[OK] Письмо с подтверждением отправлено повторно. Проверьте вкладку Спам.');
+      setStatusNotice('Письмо с подтверждением отправлено повторно. Проверьте вкладку «Спам».');
     } catch (e: any) {
       setStatusNotice(e.message || 'Ошибка отправки');
     } finally {
@@ -89,9 +89,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
     try {
       const verified = await checkEmailVerification();
       if (verified) {
-        setStatusNotice('[OK] Адрес электронной почты подтвержден.');
+        setStatusNotice('Адрес электронной почты успешно подтвержден.');
       } else {
-        setStatusNotice('Почта еще не подтверждена. Перейдите по ссылке из письма.');
+        setStatusNotice('Почта еще не подтверждена. Перейдите по ссылке из отправленного письма.');
       }
     } catch (e: any) {
       setStatusNotice(e.message || 'Ошибка проверки');
@@ -101,47 +101,49 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
   };
 
   return (
-    <div id="profile-view" className="p-6 md:p-10 max-w-7xl mx-auto flex flex-col gap-10 font-sans">
-      {/* Editorial Profile Header */}
-      <div className="border-b border-zinc-300 dark:border-zinc-800 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div id="profile-view" className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto flex flex-col gap-8 font-sans transition-colors">
+      {/* Editorial Profile Header Card */}
+      <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">
-            [DELFI] • Профиль слушателя курса • #{profile?.uid ? profile.uid.slice(0, 8) : '0000'}
+          <div className="font-heading font-bold text-xs uppercase tracking-widest text-[#3B82F6] mb-1.5 flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Личный кабинет слушателя курса</span>
           </div>
-          <h1 className="font-serif text-3xl md:text-5xl font-normal text-zinc-950 dark:text-white tracking-tight flex items-center gap-3">
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-4xl text-[#0B1F3A] dark:text-white tracking-tight flex flex-wrap items-center gap-3">
             <span>{profile?.displayName || 'Студент Delfi'}</span>
             {profile?.role === 'admin' && (
-              <span className="font-mono text-[11px] uppercase tracking-wider bg-black dark:bg-zinc-800 text-white px-2.5 py-1 font-bold border border-zinc-700">
-                [Куратор]
+              <span className="text-xs uppercase tracking-wider bg-[#3B82F6] text-white px-3 py-1 rounded-full font-bold shadow-xs">
+                Куратор
               </span>
             )}
           </h1>
 
-          <div className="font-mono text-xs text-zinc-500 dark:text-zinc-400 mt-3 flex flex-wrap items-center gap-4">
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-3 flex flex-wrap items-center gap-3 font-medium">
             <span className="flex items-center gap-2">
-              <span>Email: {profile?.email || 'не указан'}</span>
+              <span>{profile?.email || 'email не указан'}</span>
               {isEmailVerified ? (
-                <span className="text-zinc-950 dark:text-white bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-2 py-0.5 text-[10px] font-bold uppercase">
-                  [Подтвержден]
+                <span className="text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">
+                  Подтвержден
                 </span>
               ) : (
-                <span className="text-zinc-900 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 border border-zinc-400 dark:border-zinc-700 px-2 py-0.5 text-[10px] font-bold uppercase">
-                  [Требует подтверждения]
+                <span className="text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 px-2.5 py-0.5 rounded-full text-[10px] font-semibold">
+                  Требует подтверждения
                 </span>
               )}
             </span>
             <span>•</span>
-            <span>Статус: <strong className="text-zinc-800 dark:text-zinc-200">{profile?.role === 'admin' ? 'Куратор' : 'Студент'}</strong></span>
+            <span>Статус: <strong className="text-slate-800 dark:text-slate-200">{profile?.role === 'admin' ? 'Куратор' : 'Студент'}</strong></span>
             <span>•</span>
             <span>Регистрация: {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString('ru-RU') : '2026'}</span>
           </div>
 
           {!isEmailVerified && (
-            <div className="mt-4 p-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 max-w-xl font-mono text-xs text-zinc-900 dark:text-zinc-100 flex flex-col gap-2">
-              <div className="font-bold text-[11px] uppercase text-zinc-950 dark:text-white">
-                [Обязательная верификация Email]
+            <div className="mt-4 p-4 bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 rounded-xl max-w-xl text-xs text-[#0B1F3A] dark:text-zinc-100 flex flex-col gap-2">
+              <div className="font-heading font-bold text-xs uppercase tracking-wider text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5" />
+                <span>Обязательная верификация Email</span>
               </div>
-              <p className="font-sans text-xs text-zinc-700 dark:text-zinc-300">
+              <p className="text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
                 Для сохранения визового прогресса подтвердите адрес почты. Если письма нет во входящих, обязательно проверьте папку Спам.
               </p>
               <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -149,7 +151,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
                   type="button"
                   onClick={handleCheck}
                   disabled={checking}
-                  className="px-3 py-1.5 bg-black dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 font-bold uppercase text-[10px] cursor-pointer"
+                  className="px-3.5 py-1.5 bg-[#0B1F3A] hover:bg-[#111C2E] dark:bg-[#3B82F6] dark:hover:bg-blue-600 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer shadow-xs"
                 >
                   {checking ? 'Проверка...' : 'Проверить статус'}
                 </button>
@@ -157,61 +159,74 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
                   type="button"
                   onClick={handleResend}
                   disabled={resending}
-                  className="px-3 py-1.5 bg-white dark:bg-zinc-800 border border-zinc-400 dark:border-zinc-700 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-950 dark:text-white uppercase text-[10px] cursor-pointer"
+                  className="px-3.5 py-1.5 bg-white dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-[#0B1F3A] dark:text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer"
                 >
                   {resending ? 'Отправка...' : 'Отправить письмо повторно'}
                 </button>
               </div>
               {statusNotice && (
-                <div className="text-xs font-sans text-zinc-900 dark:text-zinc-200 mt-1 font-medium">{statusNotice}</div>
+                <div className="text-xs text-slate-700 dark:text-slate-200 mt-1 font-semibold">{statusNotice}</div>
               )}
             </div>
           )}
         </div>
 
         {/* Read-only status block */}
-        <div className="font-mono text-xs shrink-0 flex flex-col gap-1 text-right">
-          <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase">Уровень доступа:</span>
-          <span className="font-bold text-zinc-950 dark:text-white uppercase">
-            {profile?.role === 'admin' ? '[Администратор курса]' : '[Студент]'}
+        <div className="bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/80 rounded-xl p-4 shrink-0 flex flex-col gap-1 min-w-[180px]">
+          <span className="text-[11px] text-[#94A3B8] font-bold uppercase tracking-wider">Уровень доступа</span>
+          <span className="font-heading font-extrabold text-base text-[#0B1F3A] dark:text-white uppercase">
+            {profile?.role === 'admin' ? 'Администратор' : 'Студент курса'}
           </span>
+          <span className="text-[11px] text-slate-500 dark:text-[#94A3B8]">ID: #{profile?.uid ? profile.uid.slice(0, 8) : '0000'}</span>
         </div>
       </div>
 
-      {/* 4 Real Metrics Architectural Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-300 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-800 font-mono text-xs">
-        <div className="bg-white dark:bg-zinc-900 p-6">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Стрик занятий</div>
-          <div className="font-serif text-3xl text-zinc-950 dark:text-white font-normal mt-2">
+      {/* 4 Real Metrics Architectural Grid - 4 Rounded Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs hover:shadow-md transition-shadow">
+          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center mb-3">
+            <Flame className="w-5 h-5" />
+          </div>
+          <div className="text-[11px] uppercase tracking-wider text-[#94A3B8] font-semibold">Стрик занятий</div>
+          <div className="font-heading font-extrabold text-3xl text-[#0B1F3A] dark:text-white mt-1">
             {profile?.streakDays || 0} дн.
           </div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">Непрерывная серия</div>
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 font-medium">Непрерывная серия активности</div>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 p-6">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Сдано модулей</div>
-          <div className="font-serif text-3xl text-zinc-950 dark:text-white font-normal mt-2">
-            {passedLessonsCount} <span className="text-zinc-400 dark:text-zinc-500 text-lg">/ {totalLessonsCount}</span>
+        <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs hover:shadow-md transition-shadow">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+            <CheckCircle2 className="w-5 h-5" />
           </div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">Порог Goethe A1: 70%</div>
+          <div className="text-[11px] uppercase tracking-wider text-[#94A3B8] font-semibold">Сдано модулей</div>
+          <div className="font-heading font-extrabold text-3xl text-[#0B1F3A] dark:text-white mt-1">
+            {passedLessonsCount} <span className="text-[#94A3B8] dark:text-slate-500 text-lg">/ {totalLessonsCount}</span>
+          </div>
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 font-medium">Порог Goethe A1: 70%</div>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 p-6">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Средний балл</div>
-          <div className="font-serif text-3xl text-[#0033CC] dark:text-blue-400 font-normal mt-2">
+        <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs hover:shadow-md transition-shadow">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#3B82F6] flex items-center justify-center mb-3">
+            <Award className="w-5 h-5" />
+          </div>
+          <div className="text-[11px] uppercase tracking-wider text-[#94A3B8] font-semibold">Средний балл</div>
+          <div className="font-heading font-extrabold text-3xl text-[#3B82F6] mt-1">
             {avgScore > 0 ? `${avgScore}%` : '—'}
           </div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 font-medium">
             {hasAnyAttempt ? `По ${analytics.lessonDetails.filter(d => d.progress !== null).length} тестам` : 'Нет данных'}
           </div>
         </div>
 
-        <div className="bg-white dark:bg-zinc-900 p-6">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Всего вопросов</div>
-          <div className="font-serif text-3xl text-zinc-950 dark:text-white font-normal mt-2">
+        <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-xs hover:shadow-md transition-shadow">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3">
+            <HelpCircle className="w-5 h-5" />
+          </div>
+          <div className="text-[11px] uppercase tracking-wider text-[#94A3B8] font-semibold">Всего вопросов</div>
+          <div className="font-heading font-extrabold text-3xl text-[#0B1F3A] dark:text-white mt-1">
             {totalQuestionsSolved}
           </div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 font-medium">
             {totalAttempts} попыток тестирования
           </div>
         </div>
@@ -221,15 +236,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
       <WeeklyProgressCharts profile={profile} progress={progress} />
 
       {/* Detailed Journal of Completed & Available Modules */}
-      <div className="border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 md:p-8 flex flex-col gap-6 transition-colors">
+      <div className="border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0E1A2D] rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-xs transition-colors">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">
-            [Журнал результатов • Реальный прогресс по модулям]
+          <div className="font-heading font-bold text-xs uppercase tracking-widest text-[#3B82F6] mb-1">
+            Журнал результатов
           </div>
-          <h2 className="font-serif text-2xl md:text-3xl text-zinc-950 dark:text-white font-normal">
+          <h2 className="font-heading font-extrabold text-2xl md:text-3xl text-[#0B1F3A] dark:text-white">
             {journalTab === 'a1' ? 'Анализ прохождения модулей A1' : 'Анализ прохождения модулей словаря'}
           </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-[#94A3B8] mt-1">
             {journalTab === 'a1'
               ? `Детальный отчет по всем ${LESSONS_DATA.length} урокам курса Goethe A1 с реальными результатами и количеством попыток.`
               : `Детальный отчет по всем ${WORTSCHATZ_DATA.sections.length} тематическим секциям словаря (550 слов) с результатами проверочных тестов.`}
@@ -237,116 +252,112 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
         </div>
 
         {/* Journal Tab Switcher */}
-        <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-3 flex-wrap">
+        <div className="flex items-center p-1 bg-slate-100 dark:bg-[#111C2E] rounded-xl border border-slate-200 dark:border-slate-800 self-start">
           <button
             id="journal-tab-a1"
             type="button"
             onClick={() => setJournalTab('a1')}
-            className={`px-4 py-2 font-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer border ${
+            className={`px-4 py-2 rounded-lg font-heading text-xs font-semibold transition-all cursor-pointer ${
               journalTab === 'a1'
-                ? 'bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 border-zinc-950 dark:border-white shadow-xs'
-                : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700'
+                ? 'bg-[#0B1F3A] dark:bg-[#3B82F6] text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:text-[#0B1F3A] dark:hover:text-white'
             }`}
           >
-            Анализ прохождения модулей А1 ({passedLessonsCount}/{totalLessonsCount})
+            Уроки А1 ({passedLessonsCount}/{totalLessonsCount})
           </button>
 
           <button
             id="journal-tab-wortschatz"
             type="button"
             onClick={() => setJournalTab('wortschatz')}
-            className={`px-4 py-2 font-mono text-xs uppercase tracking-wider font-bold transition-colors cursor-pointer border ${
+            className={`px-4 py-2 rounded-lg font-heading text-xs font-semibold transition-all cursor-pointer ${
               journalTab === 'wortschatz'
-                ? 'bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 border-zinc-950 dark:border-white shadow-xs'
-                : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700'
+                ? 'bg-[#0B1F3A] dark:bg-[#3B82F6] text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:text-[#0B1F3A] dark:hover:text-white'
             }`}
           >
-            Анализ прохождения модулей словаря ({wortschatzPassedCount}/{WORTSCHATZ_DATA.sections.length})
+            Словарь ({wortschatzPassedCount}/{WORTSCHATZ_DATA.sections.length})
           </button>
         </div>
 
         {/* Tab 1: A1 Course Modules Table */}
         {journalTab === 'a1' && (
-          <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800">
-            <table className="w-full font-mono text-xs text-left border-collapse">
-              <thead className="bg-[#F4F4F5] dark:bg-zinc-800 text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 border-b border-zinc-300 dark:border-zinc-700">
+          <div className="overflow-x-auto rounded-xl border border-slate-200/90 dark:border-slate-800">
+            <table className="w-full text-xs text-left border-collapse">
+              <thead className="bg-slate-50 dark:bg-[#111C2E] text-[11px] uppercase tracking-wider text-slate-500 dark:text-[#94A3B8] border-b border-slate-200 dark:border-slate-700 font-heading font-semibold">
                 <tr>
-                  <th className="p-3">Модуль</th>
-                  <th className="p-3">Тема урока</th>
-                  <th className="p-3">Статус</th>
-                  <th className="p-3 text-center">Точность</th>
-                  <th className="p-3 text-center">Попытки</th>
-                  <th className="p-3 text-right">Дата сдачи</th>
-                  {onStartLesson && <th className="p-3 text-right">Действие</th>}
+                  <th className="p-3.5">Модуль</th>
+                  <th className="p-3.5">Тема урока</th>
+                  <th className="p-3.5">Статус</th>
+                  <th className="p-3.5 text-center">Точность</th>
+                  <th className="p-3.5 text-center">Попытки</th>
+                  <th className="p-3.5 text-right">Дата сдачи</th>
+                  {onStartLesson && <th className="p-3.5 text-right">Действие</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              <tbody className="divide-y divide-slate-200/80 dark:divide-slate-800">
                 {lessonDetails.map(({ lesson, progress: prog, status }) => {
                   const prevLesson = LESSONS_DATA.find((l) => l.number === lesson.number - 1);
                   const isUnlocked = isAdmin || lesson.number === 1 || (prevLesson && progress[prevLesson.id]?.passed);
 
                   return (
-                    <tr key={lesson.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors">
-                      <td className="p-3 font-bold text-zinc-950 dark:text-white shrink-0">
+                    <tr key={lesson.id} className="hover:bg-slate-50 dark:hover:bg-[#111C2E]/60 transition-colors">
+                      <td className="p-3.5 font-heading font-bold text-[#0B1F3A] dark:text-white shrink-0">
                         №{lesson.number.toString().padStart(2, '0')}
                       </td>
-                      <td className="p-3 font-sans">
-                        <div className="font-bold text-zinc-950 dark:text-white">{lesson.titleRu}</div>
-                        <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">{lesson.titleDe}</div>
+                      <td className="p-3.5">
+                        <div className="font-heading font-semibold text-sm text-[#0B1F3A] dark:text-white">{lesson.titleRu}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-[#94A3B8]">{lesson.titleDe}</div>
                       </td>
-                      <td className="p-3 whitespace-nowrap">
+                      <td className="p-3.5 whitespace-nowrap">
                         {status === 'passed' ? (
-                          <span className="px-2 py-0.5 bg-zinc-950 dark:bg-emerald-950 text-white dark:text-emerald-300 font-bold text-[10px] uppercase border border-zinc-950 dark:border-emerald-800">
-                            [Сдано]
+                          <span className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold text-xs rounded-full border border-emerald-200 dark:border-emerald-800">
+                            Сдано
                           </span>
                         ) : status === 'failed' ? (
-                          <span className="px-2 py-0.5 bg-zinc-100 dark:bg-rose-950/50 text-zinc-900 dark:text-rose-300 border border-zinc-400 dark:border-rose-800 text-[10px] font-bold uppercase">
-                            [Не сдано]
+                          <span className="px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs font-semibold rounded-full">
+                            Не сдано
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] uppercase">
-                            [Не начат]
+                          <span className="px-2.5 py-1 bg-slate-100 dark:bg-[#111C2E] text-slate-500 dark:text-[#94A3B8] border border-slate-200 dark:border-slate-700 text-xs rounded-full font-medium">
+                            Не начат
                           </span>
                         )}
                       </td>
-                      <td className="p-3 text-center font-bold">
+                      <td className="p-3.5 text-center font-bold">
                         {prog ? (
-                          <span className={prog.scorePercent >= lesson.passThreshold ? 'text-[#0033CC] dark:text-blue-400' : 'text-zinc-800 dark:text-zinc-300'}>
+                          <span className={prog.scorePercent >= lesson.passThreshold ? 'text-[#3B82F6]' : 'text-slate-800 dark:text-slate-300'}>
                             {prog.scorePercent}%
                           </span>
                         ) : (
-                          <span className="text-zinc-300 dark:text-zinc-600">—</span>
+                          <span className="text-slate-300 dark:text-slate-600">—</span>
                         )}
                       </td>
-                      <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">
+                      <td className="p-3.5 text-center text-slate-600 dark:text-[#94A3B8]">
                         {prog?.attemptsCount || 0}
                       </td>
-                      <td className="p-3 text-right text-zinc-500 dark:text-zinc-400 whitespace-nowrap text-[11px]">
+                      <td className="p-3.5 text-right text-slate-500 dark:text-[#94A3B8] whitespace-nowrap text-xs">
                         {prog?.completedAt ? new Date(prog.completedAt).toLocaleDateString('ru-RU') : '—'}
                       </td>
                       {onStartLesson && (
-                        <td className="p-3 text-right whitespace-nowrap">
+                        <td className="p-3.5 text-right whitespace-nowrap">
                           {lesson.isComingSoon ? (
-                            <button
-                              disabled
-                              className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] font-mono uppercase cursor-not-allowed"
-                            >
+                            <span className="px-3 py-1 bg-slate-100 dark:bg-[#111C2E] text-slate-400 dark:text-slate-500 rounded-lg text-xs font-medium">
                               Скоро
-                            </button>
+                            </span>
                           ) : !isUnlocked ? (
-                            <button
-                              disabled
+                            <span
                               title={`Модуль #${lesson.number} заблокирован. Для доступа сначала пройдите Модуль #${lesson.number - 1}`}
-                              className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] font-mono uppercase cursor-not-allowed flex items-center gap-1.5 ml-auto"
+                              className="px-3 py-1 bg-slate-100 dark:bg-[#111C2E] text-slate-400 dark:text-slate-500 rounded-lg text-xs font-medium inline-flex items-center gap-1.5"
                             >
-                              <Lock size={11} className="shrink-0 text-zinc-400 dark:text-zinc-500" />
+                              <Lock size={12} className="shrink-0" />
                               <span>Заблокирован</span>
-                            </button>
+                            </span>
                           ) : (
                             <button
                               type="button"
                               onClick={() => onStartLesson(lesson.id)}
-                              className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-white text-[10px] uppercase font-bold tracking-wider cursor-pointer font-mono"
+                              className="px-3.5 py-1.5 rounded-lg bg-[#0B1F3A] hover:bg-[#111C2E] dark:bg-[#3B82F6] dark:hover:bg-blue-600 text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
                             >
                               {prog ? 'Повторить' : 'Пройти'}
                             </button>
@@ -363,22 +374,22 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
 
         {/* Tab 2: Wortschatz (Vocabulary) Modules Table */}
         {journalTab === 'wortschatz' && (
-          <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-800">
-            <table className="w-full font-mono text-xs text-left border-collapse">
-              <thead className="bg-[#F4F4F5] dark:bg-zinc-800 text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 border-b border-zinc-300 dark:border-zinc-700">
+          <div className="overflow-x-auto rounded-xl border border-slate-200/90 dark:border-slate-800">
+            <table className="w-full text-xs text-left border-collapse">
+              <thead className="bg-slate-50 dark:bg-[#111C2E] text-[11px] uppercase tracking-wider text-slate-500 dark:text-[#94A3B8] border-b border-slate-200 dark:border-slate-700 font-heading font-semibold">
                 <tr>
-                  <th className="p-3">Тема</th>
-                  <th className="p-3">Лексическая тема</th>
-                  <th className="p-3">Уровень</th>
-                  <th className="p-3">Статус</th>
-                  <th className="p-3 text-center">Точность</th>
-                  <th className="p-3 text-center">Правильно</th>
-                  <th className="p-3 text-center">Попытки</th>
-                  <th className="p-3 text-right">Дата сдачи</th>
-                  {onOpenWortschatz && <th className="p-3 text-right">Действие</th>}
+                  <th className="p-3.5">Тема</th>
+                  <th className="p-3.5">Лексическая тема</th>
+                  <th className="p-3.5">Уровень</th>
+                  <th className="p-3.5">Статус</th>
+                  <th className="p-3.5 text-center">Точность</th>
+                  <th className="p-3.5 text-center">Правильно</th>
+                  <th className="p-3.5 text-center">Попытки</th>
+                  <th className="p-3.5 text-right">Дата сдачи</th>
+                  {onOpenWortschatz && <th className="p-3.5 text-right">Действие</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              <tbody className="divide-y divide-slate-200/80 dark:divide-slate-800">
                 {WORTSCHATZ_DATA.sections.map((section) => {
                   const prog = wortschatzProgress[section.section_id];
                   const isPassed = prog?.passed;
@@ -386,60 +397,60 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
                   const levelTag = section.section_id <= 6 ? 'A1.1' : 'A1.2';
 
                   return (
-                    <tr key={section.section_id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors">
-                      <td className="p-3 font-bold text-zinc-950 dark:text-white shrink-0">
+                    <tr key={section.section_id} className="hover:bg-slate-50 dark:hover:bg-[#111C2E]/60 transition-colors">
+                      <td className="p-3.5 font-heading font-bold text-[#0B1F3A] dark:text-white shrink-0">
                         №{section.section_id.toString().padStart(2, '0')}
                       </td>
-                      <td className="p-3 font-sans">
-                        <div className="font-bold text-zinc-950 dark:text-white">{section.title_ru}</div>
-                        <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
+                      <td className="p-3.5">
+                        <div className="font-heading font-semibold text-sm text-[#0B1F3A] dark:text-white">{section.title_ru}</div>
+                        <div className="text-[11px] text-slate-500 dark:text-[#94A3B8]">
                           {section.title_de} • {section.word_count} слов
                         </div>
                       </td>
-                      <td className="p-3 whitespace-nowrap">
-                        <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 text-[10px] font-bold uppercase">
+                      <td className="p-3.5 whitespace-nowrap">
+                        <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-[#111C2E] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-semibold">
                           {levelTag}
                         </span>
                       </td>
-                      <td className="p-3 whitespace-nowrap">
+                      <td className="p-3.5 whitespace-nowrap">
                         {isPassed ? (
-                          <span className="px-2 py-0.5 bg-zinc-950 dark:bg-emerald-950 text-white dark:text-emerald-300 font-bold text-[10px] uppercase border border-zinc-950 dark:border-emerald-800">
-                            [Сдано]
+                          <span className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold text-xs rounded-full border border-emerald-200 dark:border-emerald-800">
+                            Сдано
                           </span>
                         ) : isFailed ? (
-                          <span className="px-2 py-0.5 bg-zinc-100 dark:bg-rose-950/50 text-zinc-900 dark:text-rose-300 border border-zinc-400 dark:border-rose-800 text-[10px] font-bold uppercase">
-                            [Не сдано]
+                          <span className="px-2.5 py-1 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs font-semibold rounded-full">
+                            Не сдано
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500 border border-zinc-200 dark:border-zinc-700 text-[10px] uppercase">
-                            [Не начат]
+                          <span className="px-2.5 py-1 bg-slate-100 dark:bg-[#111C2E] text-slate-500 dark:text-[#94A3B8] border border-slate-200 dark:border-slate-700 text-xs rounded-full font-medium">
+                            Не начат
                           </span>
                         )}
                       </td>
-                      <td className="p-3 text-center font-bold">
+                      <td className="p-3.5 text-center font-bold">
                         {prog ? (
-                          <span className={prog.scorePercent >= 70 ? 'text-[#0033CC] dark:text-blue-400' : 'text-zinc-800 dark:text-zinc-300'}>
+                          <span className={prog.scorePercent >= 70 ? 'text-[#3B82F6]' : 'text-slate-800 dark:text-slate-300'}>
                             {prog.scorePercent}%
                           </span>
                         ) : (
-                          <span className="text-zinc-300 dark:text-zinc-600">—</span>
+                          <span className="text-slate-300 dark:text-slate-600">—</span>
                         )}
                       </td>
-                      <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">
+                      <td className="p-3.5 text-center text-slate-600 dark:text-[#94A3B8]">
                         {prog ? `${prog.correctAnswers} / ${prog.totalQuestions}` : `—`}
                       </td>
-                      <td className="p-3 text-center text-zinc-600 dark:text-zinc-400">
+                      <td className="p-3.5 text-center text-slate-600 dark:text-[#94A3B8]">
                         {prog?.attemptsCount || 0}
                       </td>
-                      <td className="p-3 text-right text-zinc-500 dark:text-zinc-400 whitespace-nowrap text-[11px]">
+                      <td className="p-3.5 text-right text-slate-500 dark:text-[#94A3B8] whitespace-nowrap text-xs">
                         {prog?.completedAt ? new Date(prog.completedAt).toLocaleDateString('ru-RU') : '—'}
                       </td>
                       {onOpenWortschatz && (
-                        <td className="p-3 text-right whitespace-nowrap">
+                        <td className="p-3.5 text-right whitespace-nowrap">
                           <button
                             type="button"
                             onClick={() => onOpenWortschatz(section.section_id)}
-                            className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-white text-[10px] uppercase font-bold tracking-wider cursor-pointer font-mono"
+                            className="px-3.5 py-1.5 rounded-lg bg-[#0B1F3A] hover:bg-[#111C2E] dark:bg-[#3B82F6] dark:hover:bg-blue-600 text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
                           >
                             {prog ? 'Повторить' : 'Пройти'}
                           </button>
@@ -455,30 +466,33 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onStartLesson, onOpenW
       </div>
 
       {/* Activity Matrix (30 Days) */}
-      <div className="border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 md:p-8 flex flex-col gap-6 transition-colors">
+      <div className="border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-[#0E1A2D] rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-xs transition-colors">
         <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">
-            [Журнал активности за 30 дней]
+          <div className="font-heading font-bold text-xs uppercase tracking-widest text-[#3B82F6] mb-1">
+            Журнал активности за 30 дней
           </div>
-          <h2 className="font-serif text-2xl text-zinc-950 dark:text-white font-normal">
+          <h2 className="font-heading font-extrabold text-2xl text-[#0B1F3A] dark:text-white">
             История ежедневных занятий
           </h2>
+          <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">
+            Каждый активный день тренировок приближает вас к успешной сдаче языкового экзамена Start Deutsch 1.
+          </p>
         </div>
 
-        <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-10 gap-1 font-mono text-xs">
+        <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-10 gap-2">
           {past30Days.map((item, idx) => (
             <div
               key={idx}
-              className={`p-3 border text-center flex flex-col items-center justify-between gap-2 transition-colors ${
+              className={`p-3 rounded-xl border text-center flex flex-col items-center justify-between gap-1.5 transition-all shadow-xs ${
                 item.active
-                  ? 'bg-zinc-950 dark:bg-blue-600 text-white border-zinc-950 dark:border-blue-500 font-bold'
-                  : 'bg-[#FAFAFA] dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-750 text-zinc-400 dark:text-zinc-500'
+                  ? 'bg-[#3B82F6] text-white border-[#3B82F6] font-bold shadow-blue-500/20'
+                  : 'bg-slate-50 dark:bg-[#111C2E]/80 border-slate-200 dark:border-slate-700/60 text-[#94A3B8] dark:text-slate-500'
               }`}
               title={`${item.date}: ${item.active ? 'Занятие выполнено' : 'Нет активности'}`}
             >
-              <span className="text-[9px] uppercase opacity-60">{item.month}</span>
-              <span className="font-serif text-lg leading-none">{item.dayNumber}</span>
-              <span className="text-[9px] uppercase">{item.active ? '[x]' : '[-]'}</span>
+              <span className="text-[10px] uppercase opacity-75">{item.month}</span>
+              <span className="font-heading font-bold text-lg leading-none">{item.dayNumber}</span>
+              <span className="text-[10px] uppercase font-semibold">{item.active ? 'Активен' : '—'}</span>
             </div>
           ))}
         </div>

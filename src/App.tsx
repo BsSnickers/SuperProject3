@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { Sidebar, NavTab } from './components/Sidebar';
+import { TopHeader } from './components/TopHeader';
 import { DashboardView } from './components/DashboardView';
 import { LessonsCatalogView } from './components/LessonsCatalogView';
 import { LessonPlayerView } from './components/LessonPlayerView';
@@ -28,6 +29,8 @@ function MainAppContent() {
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [selectedHandbookSectionId, setSelectedHandbookSectionId] = useState<string>('topic-1');
   const [selectedWortschatzSectionId, setSelectedWortschatzSectionId] = useState<number>(1);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<{
     lesson: Lesson;
     scorePercent: number;
@@ -169,12 +172,30 @@ function MainAppContent() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#F6F8FA] dark:bg-[#09090B] text-slate-900 dark:text-zinc-100 font-sans transition-colors duration-150">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#F4F6F8] dark:bg-[#070D18] text-[#0B1F3A] dark:text-[#F4F6F8] font-sans transition-colors duration-150">
       {/* Fixed Left Navigation Sidebar */}
-      <Sidebar activeTab={activeTab} onSelectTab={handleSelectTab} />
+      <Sidebar
+        activeTab={activeTab}
+        onSelectTab={handleSelectTab}
+        isMobileOpen={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
+      />
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 md:overflow-y-auto md:max-h-screen flex flex-col bg-[#F6F8FA] dark:bg-[#09090B]">
+      <main className="flex-1 min-w-0 md:overflow-y-auto md:max-h-screen flex flex-col bg-[#F4F6F8] dark:bg-[#070D18]">
+        {/* Top Header Bar */}
+        <TopHeader
+          searchTerm={searchQuery}
+          onSearchChange={(term) => {
+            setSearchQuery(term);
+            if (term.trim() && activeTab !== 'lessons') {
+              setActiveTab('lessons');
+            }
+          }}
+          onNavigateTab={handleSelectTab}
+          onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+        />
+
         <div className="flex-1 pb-16 md:pb-0">
           {activeTab === 'dashboard' && (
             <DashboardView
@@ -187,6 +208,7 @@ function MainAppContent() {
             <LessonsCatalogView
               onStartLesson={handleStartLesson}
               onOpenHandbook={handleOpenHandbook}
+              externalSearch={searchQuery}
             />
           )}
           {(activeTab === 'programs' || activeTab === 'au-pair' || activeTab === 'ausbildung') && (

@@ -23,62 +23,64 @@ export const ProgramsView: React.FC<ProgramsViewProps> = ({ initialProgram = 'au
   const currentAusbildungStage = profile?.ausbildungStageId || 1;
 
   return (
-    <div id="programs-unified-view" className="flex flex-col min-h-full font-sans bg-[#F8F9FA] dark:bg-[#09090B] text-zinc-950 dark:text-zinc-100 transition-colors">
-      {/* Compact Program Switcher Bar (Scrolls with page, strictly monochrome / no blue) */}
-      <div className="bg-white dark:bg-zinc-900 border-b border-zinc-300 dark:border-zinc-800">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 py-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            {/* Minimal section label */}
-            <div className="font-mono text-[11px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-medium">
-              § Программы релокации:
+    <div id="programs-unified-view" className="flex flex-col min-h-full font-sans bg-[#F4F6F8] dark:bg-[#070D18] text-[#0B1F3A] dark:text-[#F4F6F8] transition-colors">
+      {/* Program Switcher Bar */}
+      <div className="bg-white dark:bg-[#0B1526] border-b border-slate-200/90 dark:border-slate-800 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span className="font-heading font-bold text-[11px] uppercase tracking-wider text-[#3B82F6]">
+              Визовые программы
+            </span>
+            <div className="text-sm font-semibold text-[#0B1F3A] dark:text-white">
+              Официальное сопровождение переезда в ФРГ
             </div>
+          </div>
 
-            {/* Compact Toggle Buttons */}
-            <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-              <button
-                id="program-select-au-pair-btn"
-                type="button"
-                onClick={() => setActiveProgram('au-pair')}
-                className={`px-4 py-2 border transition-colors flex items-center gap-2 rounded-none cursor-pointer ${
+          {/* Clean Segmented Control */}
+          <div className="flex items-center p-1 bg-slate-100 dark:bg-[#0E1A2D] rounded-xl border border-slate-200 dark:border-slate-800 self-start sm:self-auto">
+            <button
+              id="program-select-au-pair-btn"
+              type="button"
+              onClick={() => setActiveProgram('au-pair')}
+              className={`px-4 py-2 rounded-lg font-heading text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                activeProgram === 'au-pair'
+                  ? 'bg-[#0B1F3A] dark:bg-[#3B82F6] text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-[#0B1F3A] dark:hover:text-white'
+              }`}
+            >
+              <span>Au-Pair в Германии</span>
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full font-sans font-medium ${
                   activeProgram === 'au-pair'
-                    ? 'bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 border-zinc-950 dark:border-zinc-100 font-bold shadow-xs'
-                    : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700 hover:text-black dark:hover:text-white hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-750'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-white dark:bg-[#111C2E] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                 }`}
               >
-                <span>[01] Au-Pair</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.5 border ${
-                    activeProgram === 'au-pair'
-                      ? 'border-zinc-700 dark:border-zinc-300 bg-zinc-800 dark:bg-zinc-200 text-zinc-300 dark:text-zinc-800'
-                      : 'border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
-                  }`}
-                >
-                  Этап {currentAuPairStage}/8
-                </span>
-              </button>
+                Этап {currentAuPairStage}/8
+              </span>
+            </button>
 
-              <button
-                id="program-select-ausbildung-btn"
-                type="button"
-                onClick={() => setActiveProgram('ausbildung')}
-                className={`px-4 py-2 border transition-colors flex items-center gap-2 rounded-none cursor-pointer ${
+            <button
+              id="program-select-ausbildung-btn"
+              type="button"
+              onClick={() => setActiveProgram('ausbildung')}
+              className={`px-4 py-2 rounded-lg font-heading text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
+                activeProgram === 'ausbildung'
+                  ? 'bg-[#0B1F3A] dark:bg-[#3B82F6] text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-[#0B1F3A] dark:hover:text-white'
+              }`}
+            >
+              <span>Ausbildung (Дуальное)</span>
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full font-sans font-medium ${
                   activeProgram === 'ausbildung'
-                    ? 'bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 border-zinc-950 dark:border-zinc-100 font-bold shadow-xs'
-                    : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border-zinc-300 dark:border-zinc-700 hover:text-black dark:hover:text-white hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-750'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-white dark:bg-[#111C2E] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                 }`}
               >
-                <span>[02] Ausbildung</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.5 border ${
-                    activeProgram === 'ausbildung'
-                      ? 'border-zinc-700 dark:border-zinc-300 bg-zinc-800 dark:bg-zinc-200 text-zinc-300 dark:text-zinc-800'
-                      : 'border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
-                  }`}
-                >
-                  Этап {currentAusbildungStage}/9
-                </span>
-              </button>
-            </div>
+                Этап {currentAusbildungStage}/9
+              </span>
+            </button>
           </div>
         </div>
       </div>

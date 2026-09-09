@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import { Award, CheckCircle2, RotateCcw, ArrowRight, BookOpen } from 'lucide-react';
 import { Lesson } from '../types';
 import { LESSONS_DATA } from '../data/lessonsData';
 
@@ -28,79 +29,102 @@ export const LessonResultView: React.FC<LessonResultViewProps> = ({
   useEffect(() => {
     if (isPassed) {
       confetti({
-        particleCount: 50,
-        spread: 60,
+        particleCount: 60,
+        spread: 70,
         origin: { y: 0.6 },
-        colors: ['#0033CC', '#000000', '#71717A'],
+        colors: ['#3B82F6', '#EF1B2D', '#0B1F3A', '#10B981'],
       });
     }
   }, [isPassed]);
 
   return (
-    <div id="lesson-result-view" className="min-h-screen bg-[#F8F9FA] dark:bg-[#09090B] flex items-center justify-center p-6 font-sans transition-colors">
-      <div className="border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 md:p-12 max-w-lg w-full flex flex-col gap-8 shadow-2xl">
+    <div
+      id="lesson-result-view"
+      className="min-h-screen bg-[#F4F6F8] dark:bg-[#070D18] flex items-center justify-center p-4 md:p-6 font-sans text-[#0B1F3A] dark:text-[#F4F6F8] transition-colors"
+    >
+      <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 md:p-10 max-w-lg w-full flex flex-col gap-6 shadow-xl">
         {/* Top Status Header */}
-        <div className="text-center flex flex-col gap-2 pb-6 border-b border-zinc-200 dark:border-zinc-800">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-            [Протокол тестирования • Модуль #{lesson.number}]
-          </span>
-          <h1 className="font-serif text-3xl md:text-4xl font-normal text-zinc-950 dark:text-white">
-            {isPassed ? 'Модуль успешно сдан.' : 'Требуется повторение.'}
-          </h1>
-          <p className="text-xs text-zinc-600 dark:text-zinc-400 font-sans mt-1">
-            {isPassed
-              ? `Вы набрали ${scorePercent}% и подтвердили порог ${lesson.passThreshold}%.`
-              : `Текущий результат ${scorePercent}%. Необходимый порог для зачета — ${lesson.passThreshold}%.`}
-          </p>
+        <div className="text-center flex flex-col items-center gap-3 pb-6 border-b border-slate-200/80 dark:border-slate-800">
+          <div
+            className={`w-16 h-16 rounded-full flex items-center justify-center shadow-xs ${
+              isPassed
+                ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400'
+                : 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400'
+            }`}
+          >
+            {isPassed ? <Award className="w-8 h-8" /> : <RotateCcw className="w-8 h-8" />}
+          </div>
+
+          <div>
+            <span className="text-[10px] uppercase font-mono tracking-wider text-[#94A3B8]">
+              Модуль #{lesson.number}: {lesson.titleDe}
+            </span>
+            <h1 className="font-heading font-extrabold text-2xl md:text-3xl text-[#0B1F3A] dark:text-white mt-1">
+              {isPassed ? 'Модуль успешно сдан!' : 'Требуется повторение'}
+            </h1>
+            <p className="text-xs md:text-sm text-[#94A3B8] font-medium mt-1">
+              {isPassed
+                ? `Отличный результат! Вы набрали ${scorePercent}% при проходном пороге ${lesson.passThreshold}%.`
+                : `Вы набрали ${scorePercent}%. Необходимый порог для зачета — ${lesson.passThreshold}%.`}
+            </p>
+          </div>
         </div>
 
-        {/* Score Grid: Architectural Data Box */}
-        <div className="grid grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 font-mono text-center">
-          <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-4">
-            <div className="text-[9px] uppercase tracking-wider text-zinc-400">Результат</div>
-            <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
+        {/* Score Grid */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="p-4 bg-[#F4F6F8] dark:bg-[#111C2E] rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+            <div className="text-[10px] uppercase font-mono tracking-wider text-[#94A3B8]">Результат</div>
+            <div
+              className={`font-heading font-extrabold text-2xl mt-1 ${
+                isPassed ? 'text-emerald-600 dark:text-emerald-400' : 'text-[#0B1F3A] dark:text-white'
+              }`}
+            >
               {scorePercent}%
             </div>
           </div>
-          <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-4">
-            <div className="text-[9px] uppercase tracking-wider text-zinc-400">Правильно</div>
-            <div className="font-serif text-2xl font-normal text-zinc-950 dark:text-white mt-1">
+
+          <div className="p-4 bg-[#F4F6F8] dark:bg-[#111C2E] rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+            <div className="text-[10px] uppercase font-mono tracking-wider text-[#94A3B8]">Правильно</div>
+            <div className="font-heading font-extrabold text-2xl text-[#0B1F3A] dark:text-white mt-1">
               {correctAnswers}/{totalQuestions}
             </div>
           </div>
-          <div className="bg-[#FAFAFA] dark:bg-zinc-950 p-4">
-            <div className="text-[9px] uppercase tracking-wider text-zinc-400">Порог</div>
-            <div className="font-serif text-2xl font-normal text-zinc-600 dark:text-zinc-400 mt-1">
+
+          <div className="p-4 bg-[#F4F6F8] dark:bg-[#111C2E] rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+            <div className="text-[10px] uppercase font-mono tracking-wider text-[#94A3B8]">Порог сдачи</div>
+            <div className="font-heading font-extrabold text-2xl text-[#3B82F6] mt-1">
               {lesson.passThreshold}%
             </div>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex flex-col gap-2 font-mono text-xs">
+        <div className="flex flex-col gap-2.5 pt-2">
           {isPassed && nextLesson ? (
             <button
               id="result-next-lesson-btn"
               onClick={() => onNextLesson(nextLesson.id)}
-              className="w-full py-3.5 px-4 bg-black dark:bg-[#0033CC] hover:bg-[#0033CC] dark:hover:bg-blue-500 text-white uppercase tracking-wider font-bold transition-colors border border-black dark:border-blue-600 text-center cursor-pointer"
+              className="w-full py-3 px-4 bg-[#0B1F3A] hover:bg-[#152e54] text-white text-xs md:text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
             >
-              Следующий модуль (#{nextLesson.number}) →
+              <span>Следующий модуль (#{nextLesson.number})</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           ) : (
             <button
               id="result-retry-btn"
               onClick={onRetry}
-              className="w-full py-3.5 px-4 bg-black dark:bg-zinc-100 hover:bg-[#0033CC] dark:hover:bg-blue-600 text-white dark:text-zinc-950 dark:hover:text-white uppercase tracking-wider font-bold transition-colors border border-black dark:border-zinc-100 text-center cursor-pointer"
+              className="w-full py-3 px-4 bg-[#0B1F3A] hover:bg-[#152e54] text-white text-xs md:text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
             >
-              Повторить тестирование ↺
+              <RotateCcw className="w-4 h-4" />
+              <span>Пройти модуль заново</span>
             </button>
           )}
 
-          <div className="grid grid-cols-2 gap-2 pt-2">
+          <div className="grid grid-cols-2 gap-2.5">
             {isPassed && (
               <button
                 onClick={onRetry}
-                className="py-2.5 px-3 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 transition-colors text-center cursor-pointer"
+                className="py-2.5 px-3 bg-[#F4F6F8] dark:bg-[#111C2E] hover:bg-slate-200 dark:hover:bg-slate-800 text-[#0B1F3A] dark:text-white text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700/80 transition-colors text-center cursor-pointer"
               >
                 Повторить
               </button>
@@ -109,11 +133,11 @@ export const LessonResultView: React.FC<LessonResultViewProps> = ({
             <button
               id="result-catalog-btn"
               onClick={onGoToCatalog}
-              className={`py-2.5 px-3 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 uppercase tracking-wider border border-zinc-300 dark:border-zinc-700 transition-colors text-center cursor-pointer ${
+              className={`py-2.5 px-3 bg-[#F4F6F8] dark:bg-[#111C2E] hover:bg-slate-200 dark:hover:bg-slate-800 text-[#0B1F3A] dark:text-white text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700/80 transition-colors text-center cursor-pointer ${
                 !isPassed ? 'col-span-2' : ''
               }`}
             >
-              Каталог уроков →
+              В каталог модулей →
             </button>
           </div>
         </div>

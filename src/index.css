@@ -9,45 +9,46 @@
 
   html.dark {
     color-scheme: dark;
-    background-color: #09090b;
-    color: #f4f4f5;
+    background-color: #070D18;
+    color: #F4F6F8;
   }
 
   html.light {
     color-scheme: light;
-    background-color: #f8f9fa;
-    color: #09090b;
+    background-color: #F4F6F8;
+    color: #0B1F3A;
   }
 
   html.dark body {
-    background-color: #09090b;
-    color: #f4f4f5;
+    background-color: #070D18;
+    color: #F4F6F8;
   }
 
   html.light body {
-    background-color: #f8f9fa;
-    color: #09090b;
+    background-color: #F4F6F8;
+    color: #0B1F3A;
   }
 
   * {
-    border-color: var(--border-color, #3f3f46);
+    border-color: var(--border-color, #E2E8F0);
   }
 
   html.dark * {
-    border-color: #27272a;
+    border-color: #1E293B;
   }
 
   html.light * {
-    border-color: #e4e4e7;
+    border-color: #E2E8F0;
   }
   
   body {
-    font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
     transition: background-color 0.15s ease, color 0.15s ease;
   }
 
-  h1, h2, h3, .font-serif {
-    font-family: 'Newsreader', Georgia, serif;
+  h1, h2, h3, h4, h5, h6, .font-heading, .font-serif {
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.015em;
   }
 
   .font-mono {
@@ -55,8 +56,8 @@
   }
 
   .font-tolyer {
-    font-family: 'Tolyer No.3 Medium', 'Tolyer No. 3 Medium', 'Tolyer No.3', 'Tolyer No. 3', 'Tolyer', 'Bebas Neue', 'Oswald', -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
   }
 }
 

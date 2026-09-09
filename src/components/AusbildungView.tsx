@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { AUSBILDUNG_STAGES, PROGRAM_STATUS_MAP } from '../data/programsData';
+import { Check, Clock, AlertCircle, Sparkles, Euro, BookOpen, Calendar, GraduationCap } from 'lucide-react';
 
 export const AusbildungView: React.FC = () => {
   const { profile } = useAuth();
@@ -12,70 +13,104 @@ export const AusbildungView: React.FC = () => {
   const updatedAt = profile?.ausbildungUpdatedAt ? new Date(profile.ausbildungUpdatedAt).toLocaleDateString('ru-RU') : 'Сегодня';
 
   return (
-    <div id="ausbildung-view" className="p-6 md:p-10 max-w-7xl mx-auto flex flex-col gap-10 font-sans transition-colors">
+    <div id="ausbildung-view" className="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto flex flex-col gap-8 font-sans transition-colors">
       {/* Editorial Header */}
-      <div className="border-b border-zinc-300 dark:border-zinc-800 pb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">
-            § Программа 02 • Дуальное профессиональное образование (18–35+ лет)
+      <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="max-w-2xl">
+          <div className="font-heading font-bold text-xs uppercase tracking-widest text-[#3B82F6] mb-1.5 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Программа 02 • Дуальное профессиональное образование (18–35+ лет)</span>
           </div>
-          <h1 className="font-serif text-3xl md:text-5xl font-normal text-zinc-950 dark:text-white tracking-tight">
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-4xl text-[#0B1F3A] dark:text-white tracking-tight">
             Ausbildung в Германии
           </h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 font-normal mt-2 max-w-2xl">
-            Государственный диплом ЕС, официальная зарплата ученика от 1 100€/мес и прямой трекер визовых этапов IHK/HWK.
+          <p className="text-sm text-slate-600 dark:text-[#94A3B8] font-medium mt-2 leading-relaxed">
+            Государственный диплом ЕС, официальная зарплата ученика от 1 050€/мес и прямой трекер визовых этапов IHK/HWK.
           </p>
         </div>
 
         {/* Status Box */}
-        <div className="border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 font-mono text-xs shrink-0 flex flex-col gap-1">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Статус заявки</div>
-          <div className="font-bold text-zinc-950 dark:text-white uppercase">{statusInfo.label}</div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400">Обновлено: {updatedAt}</div>
+        <div className="bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/80 rounded-xl p-4.5 shrink-0 flex flex-col gap-1 min-w-[200px]">
+          <div className="text-[11px] uppercase tracking-wider text-[#94A3B8] font-bold">Статус заявки</div>
+          <div className="font-heading font-bold text-base text-[#0B1F3A] dark:text-white uppercase flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#3B82F6] animate-pulse"></span>
+            {statusInfo.label}
+          </div>
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">Обновлено: {updatedAt}</div>
         </div>
       </div>
 
-      {/* Highlights Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-zinc-300 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-800 font-mono text-xs">
-        <div className="bg-white dark:bg-zinc-900 p-5">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Стипендия ученика</div>
-          <div className="font-serif text-2xl text-zinc-950 dark:text-white font-normal mt-1">1 050–1 450€</div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">ежемесячно по контракту</div>
+      {/* Highlights Grid - 4 Rounded Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:shadow-md transition-shadow">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#3B82F6] flex items-center justify-center mb-3">
+            <Euro className="w-5 h-5" />
+          </div>
+          <div className="text-[11px] uppercase tracking-wider text-[#94A3B8] font-semibold">Стипендия ученика</div>
+          <div className="font-heading font-extrabold text-2xl text-[#0B1F3A] dark:text-white mt-1">1 050–1 450€</div>
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 font-medium">ежемесячно по контракту</div>
         </div>
-        <div className="bg-white dark:bg-zinc-900 p-5">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Формат</div>
-          <div className="font-serif text-2xl text-zinc-950 dark:text-white font-normal mt-1">Дуальный</div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">Теория + оплата труда</div>
+
+        <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:shadow-md transition-shadow">
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
+            <BookOpen className="w-5 h-5" />
+          </div>
+          <div className="text-[11px] uppercase tracking-wider text-[#94A3B8] font-semibold">Формат</div>
+          <div className="font-heading font-extrabold text-2xl text-[#0B1F3A] dark:text-white mt-1">Дуальный</div>
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 font-medium">Теория + оплата труда</div>
         </div>
-        <div className="bg-white dark:bg-zinc-900 p-5">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Срок обучения</div>
-          <div className="font-serif text-2xl text-zinc-950 dark:text-white font-normal mt-1">3–3.5 года</div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">Диплом ЕС / IHK / HWK</div>
+
+        <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:shadow-md transition-shadow">
+          <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">
+            <Calendar className="w-5 h-5" />
+          </div>
+          <div className="text-[11px] uppercase tracking-wider text-[#94A3B8] font-semibold">Срок обучения</div>
+          <div className="font-heading font-extrabold text-2xl text-[#0B1F3A] dark:text-white mt-1">3–3.5 года</div>
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 font-medium">Диплом ЕС / IHK / HWK</div>
         </div>
-        <div className="bg-white dark:bg-zinc-900 p-5">
-          <div className="text-[9px] uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Требуемый язык</div>
-          <div className="font-serif text-2xl text-zinc-950 dark:text-white font-normal mt-1">B1 / B2</div>
-          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">Старт с базы A1</div>
+
+        <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:shadow-md transition-shadow">
+          <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3">
+            <GraduationCap className="w-5 h-5" />
+          </div>
+          <div className="text-[11px] uppercase tracking-wider text-[#94A3B8] font-semibold">Требуемый язык</div>
+          <div className="font-heading font-extrabold text-2xl text-[#0B1F3A] dark:text-white mt-1">B1 / B2</div>
+          <div className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 font-medium">Старт с базы A1</div>
         </div>
       </div>
 
       {/* Curator Memo */}
-      <div className="border border-zinc-300 dark:border-zinc-800 bg-[#FAFAFA] dark:bg-zinc-900 p-6 font-mono text-xs">
-        <div className="font-bold text-zinc-950 dark:text-white uppercase tracking-wider mb-2">
-          [Служебная записка визового координатора]
+      <div className="bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-900/40 rounded-2xl p-6 shadow-xs flex items-start gap-4">
+        <div className="w-10 h-10 rounded-xl bg-[#3B82F6] text-white flex items-center justify-center shrink-0 shadow-xs">
+          <AlertCircle className="w-5 h-5" />
         </div>
-        <p className="font-sans text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed">
-          {adminNotes}
-        </p>
+        <div>
+          <div className="font-heading font-bold text-xs uppercase tracking-wider text-[#3B82F6] mb-1">
+            Заметка визового координатора
+          </div>
+          <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+            {adminNotes}
+          </p>
+        </div>
       </div>
 
       {/* Stepper Checklist */}
-      <div className="flex flex-col gap-4">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
-          [Этапы зачисления и оформления визы: 9 шагов]
+      <div className="flex flex-col gap-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="font-heading font-bold text-xs uppercase tracking-wider text-[#94A3B8]">
+              Пошаговый план
+            </span>
+            <h2 className="font-heading font-bold text-xl text-[#0B1F3A] dark:text-white mt-0.5">
+              Этапы зачисления и оформления визы (9 шагов)
+            </h2>
+          </div>
+          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 dark:bg-[#0E1A2D] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+            Текущий этап: 0{currentStageId} из 9
+          </span>
         </div>
 
-        <div className="flex flex-col gap-px bg-zinc-300 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-800">
+        <div className="flex flex-col gap-4">
           {AUSBILDUNG_STAGES.map((stage) => {
             const isCompleted = stage.id < currentStageId;
             const isCurrent = stage.id === currentStageId;
@@ -84,64 +119,69 @@ export const AusbildungView: React.FC = () => {
               <div
                 key={stage.id}
                 id={`ausbildung-stage-${stage.id}`}
-                className={`p-6 bg-white dark:bg-zinc-900 flex flex-col md:flex-row md:items-start justify-between gap-6 transition-colors ${
-                  isCurrent ? 'bg-zinc-50 dark:bg-zinc-800/60' : ''
+                className={`p-6 rounded-2xl border transition-all duration-200 flex flex-col md:flex-row md:items-start justify-between gap-6 shadow-xs ${
+                  isCurrent
+                    ? 'bg-white dark:bg-[#0E1A2D] border-[#3B82F6] ring-2 ring-blue-500/20 shadow-md'
+                    : isCompleted
+                    ? 'bg-white/70 dark:bg-[#0E1A2D]/70 border-slate-200/90 dark:border-slate-800'
+                    : 'bg-white dark:bg-[#0E1A2D] border-slate-200/90 dark:border-slate-800 opacity-80'
                 }`}
               >
-                <div className="flex items-start gap-6">
-                  {/* Step Number */}
-                  <div className="font-mono text-xs pt-0.5 shrink-0">
+                <div className="flex items-start gap-4 sm:gap-5">
+                  {/* Step Number Circle */}
+                  <div className="shrink-0 pt-0.5">
                     <span
-                      className={`inline-block px-2 py-1 border font-bold ${
+                      className={`w-9 h-9 rounded-full flex items-center justify-center font-heading font-bold text-xs transition-colors shadow-xs ${
                         isCompleted
-                          ? 'bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-950 border-zinc-950 dark:border-zinc-100'
+                          ? 'bg-emerald-500 text-white'
                           : isCurrent
-                          ? 'bg-zinc-950 dark:bg-blue-600 text-white border-zinc-950 dark:border-blue-600 ring-2 ring-zinc-400 dark:ring-blue-400'
-                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border-zinc-300 dark:border-zinc-700'
+                          ? 'bg-[#3B82F6] text-white shadow-blue-500/20'
+                          : 'bg-slate-100 dark:bg-[#111C2E] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
                       }`}
                     >
-                      {isCompleted ? '[x]' : `0${stage.number}`}
+                      {isCompleted ? <Check className="w-4 h-4" /> : `0${stage.number}`}
                     </span>
                   </div>
 
                   {/* Details */}
                   <div className="flex flex-col gap-2 max-w-3xl">
-                    <div className="flex flex-wrap items-baseline gap-3">
-                      <h3 className="font-serif text-xl font-normal text-zinc-950 dark:text-white">
+                    <div className="flex flex-wrap items-baseline gap-2.5">
+                      <h3 className="font-heading font-bold text-lg text-[#0B1F3A] dark:text-white">
                         {stage.titleRu}
                       </h3>
-                      <span className="font-mono text-xs text-zinc-400 dark:text-zinc-500 italic">
+                      <span className="text-xs text-[#94A3B8] font-medium">
                         / {stage.titleDe}
                       </span>
                     </div>
 
-                    <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-[#94A3B8] leading-relaxed">
                       {stage.description}
                     </p>
 
-                    <div className="mt-2 p-3 bg-[#FAFAFA] dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 font-mono text-[11px] text-zinc-700 dark:text-zinc-300">
-                      <span className="font-bold text-zinc-950 dark:text-white uppercase">Совет куратора: </span>
-                      <span className="font-sans">{stage.tips}</span>
+                    <div className="mt-1 p-3 bg-slate-50 dark:bg-[#111C2E] rounded-xl border border-slate-200/80 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300">
+                      <span className="font-bold text-[#0B1F3A] dark:text-white">Совет куратора: </span>
+                      <span>{stage.tips}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Status Column */}
-                <div className="font-mono text-xs flex md:flex-col items-end justify-between md:justify-start gap-2 shrink-0">
+                <div className="flex md:flex-col items-end justify-between md:justify-start gap-2 shrink-0 self-end md:self-auto">
                   <span
-                    className={`px-2.5 py-1 border text-[10px] uppercase tracking-wider font-bold ${
+                    className={`px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${
                       isCompleted
-                        ? 'border-zinc-900 dark:border-zinc-700 bg-zinc-900 dark:bg-zinc-800 text-white'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
                         : isCurrent
-                        ? 'border-zinc-950 dark:border-blue-600 bg-zinc-950 dark:bg-blue-600 text-white'
-                        : 'border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'
+                        ? 'bg-blue-50 dark:bg-blue-950/40 text-[#3B82F6] border border-blue-200 dark:border-blue-800'
+                        : 'bg-slate-100 dark:bg-[#111C2E] text-slate-500 dark:text-[#94A3B8] border border-slate-200 dark:border-slate-700'
                     }`}
                   >
-                    {isCompleted ? 'Завершено' : isCurrent ? 'Текущий этап' : 'Ожидание'}
+                    {isCompleted ? 'Завершено' : isCurrent ? 'В процессе' : 'Ожидание'}
                   </span>
-                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase">
-                    Срок: {stage.estimatedDays}
-                  </span>
+                  <div className="text-xs text-slate-500 dark:text-[#94A3B8] flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    <span>Срок: {stage.estimatedDays}</span>
+                  </div>
                 </div>
               </div>
             );

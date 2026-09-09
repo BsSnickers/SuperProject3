@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { X, Mail, Lock, User, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface AuthModalProps {
@@ -43,7 +44,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       }
     } catch (err: any) {
       console.error('Auth error:', err);
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+      if (
+        err.code === 'auth/invalid-credential' ||
+        err.code === 'auth/wrong-password' ||
+        err.code === 'auth/user-not-found'
+      ) {
         setError('Неверный адрес электронной почты или пароль.');
       } else if (err.code === 'auth/email-already-in-use') {
         setError('Данный email уже зарегистрирован в системе.');
@@ -76,29 +81,37 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 font-sans">
-      <div className="bg-white dark:bg-zinc-900 border border-black dark:border-zinc-700 max-w-md w-full p-8 relative flex flex-col gap-6 max-h-[92vh] overflow-y-auto shadow-2xl transition-colors">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 font-sans animate-fade-in">
+      <div className="bg-white dark:bg-[#0E1A2D] border border-slate-200/90 dark:border-slate-800 rounded-2xl max-w-md w-full p-6 md:p-8 relative flex flex-col gap-6 max-h-[92vh] overflow-y-auto shadow-2xl transition-colors">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 font-mono text-sm p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 cursor-pointer"
+          aria-label="Закрыть"
+          className="absolute right-4 top-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
         >
-          [X]
+          <X className="w-5 h-5" />
         </button>
 
         {/* Brand Header */}
-        <div className="border-b border-zinc-200 dark:border-zinc-800 pb-4">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">
-            [DELFI PLATFORM] • Аутентификация
+        <div className="flex items-center gap-3.5 pb-4 border-b border-slate-200/80 dark:border-slate-800">
+          <img
+            src="/delfi-logo-circle.svg"
+            alt="DELFI"
+            className="w-12 h-12 rounded-full shadow-xs shrink-0 object-contain"
+          />
+          <div>
+            <div className="text-[10px] uppercase font-mono tracking-wider text-[#3B82F6] font-bold">
+              DELFI TRAINING PLATFORM
+            </div>
+            <h2 className="font-heading font-extrabold text-2xl text-[#0B1F3A] dark:text-white mt-0.5">
+              {isSignUp ? 'Создать аккаунт' : 'Вход в аккаунт'}
+            </h2>
+            <p className="text-xs text-[#94A3B8] font-medium mt-0.5">
+              {isSignUp
+                ? 'Пройдите регистрацию для доступа к урокам и программам.'
+                : 'Войдите для продолжения обучения и сохранения прогресса.'}
+            </p>
           </div>
-          <h2 className="font-serif text-3xl font-normal text-zinc-950 dark:text-white">
-            {isSignUp ? 'Регистрация' : 'Вход в аккаунт'}
-          </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans mt-1">
-            {isSignUp
-              ? 'Создайте учетную запись. Сразу после регистрации потребуется подтверждение email.'
-              : 'Введите учетные данные для доступа к учебным материалам.'}
-          </p>
         </div>
 
         {/* Google Sign-In */}
@@ -107,76 +120,103 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           id="google-signin-btn"
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-750 border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-white font-mono text-xs uppercase tracking-wider py-3 px-4 transition-colors flex items-center justify-center gap-3 cursor-pointer"
+          className="w-full bg-[#F4F6F8] dark:bg-[#111C2E] hover:bg-slate-200/70 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[#0B1F3A] dark:text-white font-semibold text-xs py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2.5 cursor-pointer"
         >
-          <span>Войти через Google Account</span>
+          <svg className="w-4 h-4" viewBox="0 0 24 24">
+            <path
+              fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+            />
+            <path
+              fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+            />
+            <path
+              fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+            />
+            <path
+              fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+            />
+          </svg>
+          <span>Продолжить через Google</span>
         </button>
 
         <div className="flex items-center gap-3">
-          <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
-          <span className="font-mono text-[10px] text-zinc-400 dark:text-zinc-500 uppercase">или по email</span>
-          <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
+          <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
+          <span className="text-[11px] text-[#94A3B8] font-medium uppercase">или по email</span>
+          <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800"></div>
         </div>
 
         {error && (
-          <div className="border border-zinc-400 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 p-4 font-mono text-xs text-zinc-900 dark:text-zinc-100 flex flex-col gap-1">
-            <div className="font-bold uppercase text-[10px]">[Сообщение системы]</div>
-            <div className="font-sans text-xs">{error}</div>
+          <div className="p-3.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-xl flex items-start gap-2.5 text-xs text-red-700 dark:text-red-300">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <span>{error}</span>
           </div>
         )}
 
         {/* Main Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 font-mono text-xs">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-xs">
           {isSignUp && (
             <div>
-              <label className="text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">
-                Имя и фамилия
+              <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block mb-1">
+                Ваше имя
               </label>
-              <input
-                id="auth-name-input"
-                type="text"
-                required
-                placeholder="Наталья Чернова"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2.5 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 font-mono text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-black dark:focus:border-white rounded-none"
-              />
+              <div className="relative">
+                <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <input
+                  id="auth-name-input"
+                  type="text"
+                  required
+                  placeholder="Анна Смирнова"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full pl-9 pr-3.5 py-2.5 bg-[#F4F6F8] dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs text-[#0B1F3A] dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/50 focus:border-[#3B82F6] transition-all"
+                />
+              </div>
             </div>
           )}
 
           <div>
-            <label className="text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">
-              Адрес Email (требуется подтверждение)
+            <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block mb-1">
+              Адрес электронной почты
             </label>
-            <input
-              id="auth-email-input"
-              type="email"
-              required
-              placeholder="user@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2.5 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 font-mono text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-black dark:focus:border-white rounded-none"
-            />
+            <div className="relative">
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                id="auth-email-input"
+                type="email"
+                required
+                placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 bg-[#F4F6F8] dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs text-[#0B1F3A] dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/50 focus:border-[#3B82F6] transition-all"
+              />
+            </div>
           </div>
 
           <div>
-            <label className="text-[10px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">
+            <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 block mb-1">
               Пароль
             </label>
-            <input
-              id="auth-password-input"
-              type="password"
-              required
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2.5 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 font-mono text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:border-black dark:focus:border-white rounded-none"
-            />
+            <div className="relative">
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <input
+                id="auth-password-input"
+                type="password"
+                required
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 bg-[#F4F6F8] dark:bg-[#111C2E] border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs text-[#0B1F3A] dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/50 focus:border-[#3B82F6] transition-all"
+              />
+            </div>
           </div>
 
           {isSignUp && (
-            <div className="p-2.5 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-750 text-[10px] text-zinc-600 dark:text-zinc-400 font-sans leading-relaxed">
-              [Информация] После отправки формы вам будет направлено письмо для верификации адреса. Если письма нет во входящих, проверьте вкладку Спам.
+            <div className="p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 rounded-xl text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">
+              После регистрации вам будет отправлено письмо для подтверждения email. Если письмо не пришло, проверьте папку Спам.
             </div>
           )}
 
@@ -184,14 +224,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             id="auth-submit-btn"
             type="submit"
             disabled={loading}
-            className="w-full bg-black dark:bg-blue-600 hover:bg-[#0033CC] dark:hover:bg-blue-500 text-white font-mono text-xs uppercase tracking-wider py-3.5 border border-black dark:border-blue-500 font-bold transition-colors mt-2 cursor-pointer"
+            className="w-full bg-[#0B1F3A] hover:bg-[#152e54] text-white text-xs font-semibold py-3 rounded-xl shadow-xs transition-colors mt-1 cursor-pointer disabled:opacity-50"
           >
-            {loading ? 'Обработка...' : isSignUp ? 'Зарегистрироваться ->' : 'Войти в личный кабинет ->'}
+            {loading ? 'Обработка...' : isSignUp ? 'Зарегистрироваться →' : 'Войти в личный кабинет →'}
           </button>
         </form>
 
-        {/* Toggle Mode */}
-        <div className="text-center font-mono text-xs text-zinc-500 dark:text-zinc-400 pt-2 border-t border-zinc-200 dark:border-zinc-800">
+        {/* Switch mode */}
+        <div className="text-center text-xs text-[#94A3B8] pt-2 border-t border-slate-200/80 dark:border-slate-800">
           {isSignUp ? 'Уже есть аккаунт?' : 'Впервые на платформе?'}
           <button
             type="button"
@@ -199,7 +239,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               setIsSignUp(!isSignUp);
               setError(null);
             }}
-            className="text-black dark:text-blue-400 font-bold underline ml-1.5 cursor-pointer"
+            className="text-[#3B82F6] font-semibold hover:underline ml-1.5 cursor-pointer"
           >
             {isSignUp ? 'Войти' : 'Создать аккаунт'}
           </button>
